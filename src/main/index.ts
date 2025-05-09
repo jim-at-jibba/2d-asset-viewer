@@ -4,6 +4,20 @@ import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import { existsSync, statSync, readdirSync } from 'fs'
 
+// Register the asset:// protocol as privileged - MUST be called before app is ready
+protocol.registerSchemesAsPrivileged([
+  {
+    scheme: 'asset',
+    privileges: {
+      standard: true,
+      supportFetchAPI: true,
+      secure: true,
+      bypassCSP: true, // This is the key property to bypass CSP restrictions
+      corsEnabled: true
+    }
+  }
+])
+
 function createWindow(): void {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
@@ -45,20 +59,6 @@ app.whenReady().then(() => {
 
   // Register the asset:// protocol for loading local files
   // This is needed for the AssetPreview component to display local images
-  protocol.registerSchemesAsPrivileged([
-    {
-      scheme: 'asset',
-      privileges: {
-        standard: true,
-        supportFetchAPI: true,
-        secure: true,
-        bypassCSP: true, // This is the key property to bypass CSP restrictions
-        corsEnabled: true
-      }
-    }
-  ])
-
-  // Register the asset:// protocol for loading local files
   protocol.registerFileProtocol('asset', (request, callback) => {
     const url = request.url.replace('asset://', '')
     try {

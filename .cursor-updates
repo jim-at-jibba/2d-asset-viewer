@@ -10,4 +10,4 @@
 - Added aspect ratio maintenance for proper image display
 - Added customizable transparency background with multiple options (checkered, black, white, gray, transparent)
 - Implemented mouse wheel zoom functionality with zoom level display
-- Fixed asset protocol handling by registering it as a privileged scheme to bypass CSP restrictions
+- Fixed asset protocol handling by registering it as a privileged scheme before app ready to bypass CSP restrictions
