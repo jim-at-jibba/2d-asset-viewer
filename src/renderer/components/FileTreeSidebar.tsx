@@ -50,8 +50,8 @@ const TreeItem: React.FC<TreeItemProps> = ({ node, level = 0, onAssetSelect }) =
         >
           <CollapsibleTrigger asChild>
             <div
-              style={{ paddingLeft: `${indentPadding}px` }}
-              className="flex items-center h-8 w-full text-sm hover:bg-muted/50 cursor-pointer rounded-md" // Adjusted styling
+              style={{ paddingLeft: `${indentPadding}px`, cursor: 'pointer' }}
+              className="flex items-center h-8 w-full text-sm hover:bg-muted/50 rounded-md"
             >
               <ChevronRight
                 style={{
@@ -80,8 +80,8 @@ const TreeItem: React.FC<TreeItemProps> = ({ node, level = 0, onAssetSelect }) =
       // Empty folder
       return (
         <div
-          style={{ paddingLeft: `${indentPadding}px` }}
-          className="flex items-center h-8 w-full text-sm hover:bg-muted/50 rounded-md" // Adjusted styling
+          style={{ paddingLeft: `${indentPadding}px`, cursor: 'pointer' }}
+          className="flex items-center h-8 w-full text-sm hover:bg-muted/50 rounded-md"
         >
           <span className="w-4 mr-1.5" /> {/* Spacer for alignment with chevron */}
           <CurrentFolderIcon className="h-4 w-4 mr-1.5 text-blue-500" />
@@ -94,8 +94,8 @@ const TreeItem: React.FC<TreeItemProps> = ({ node, level = 0, onAssetSelect }) =
   // File node - update to handle click for asset selection
   return (
     <div
-      style={{ paddingLeft: `${indentPadding}px` }}
-      className="flex items-center h-8 w-full text-sm hover:bg-muted/50 rounded-md cursor-pointer" // Added cursor-pointer
+      style={{ paddingLeft: `${indentPadding}px`, cursor: 'pointer' }}
+      className="flex items-center h-8 w-full text-sm hover:bg-muted/50 rounded-md"
       onClick={() => onAssetSelect && node.path && onAssetSelect(node.path)}
     >
       <span className="w-4 mr-1.5" /> {/* Spacer for alignment with chevron */}
