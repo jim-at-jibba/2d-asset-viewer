@@ -1,0 +1,58 @@
+.file-tree-sidebar {
+  width: 250px;
+  padding: 10px;
+  border-right: 1px solid #ccc;
+  font-family: sans-serif;
+  height: 100vh; /* Or adjust as needed */
+  overflow-y: auto;
+}
+
+.file-tree-sidebar h3 {
+  margin-top: 0;
+  font-size: 16px;
+  color: #333;
+}
+
+.tree-item {
+  margin-bottom: 4px;
+}
+
+.tree-node {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  padding: 2px 0;
+  user-select: none; /* Prevent text selection on click */
+}
+
+.tree-node:hover {
+  background-color: #f0f0f0;
+}
+
+.expansion-arrow {
+  width: 16px;
+  display: inline-block;
+  text-align: center;
+  margin-right: 4px;
+  font-size: 12px;
+}
+
+.node-icon {
+  margin-right: 6px;
+}
+
+.node-name {
+  font-size: 14px;
+}
+
+.tree-node.folder .node-name {
+  font-weight: bold;
+}
+
+.tree-node.file .node-name {
+  /* Styles specific to file nodes if needed */
+}
+
+.tree-children {
+  /* No specific styles needed here for now, relies on padding of TreeItem */
+}

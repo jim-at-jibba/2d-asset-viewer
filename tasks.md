@@ -2,7 +2,7 @@
 
 ## Epic 1: File System Navigation (F1)
 
-- [ ] **Folder Tree Display** (Priority: Critical 1)
+- [x] **Folder Tree Display** (Priority: Critical 1)
 
   - As a game developer, I want to see a collapsible folder tree in the sidebar, so that I can navigate my file system easily.
   - **Acceptance Criteria**:
