@@ -1,0 +1,61 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Lucide Icons Usage Rule
+
+Ensures that `lucide-react-native` is used for icons instead of older vector icon libraries.
+
+<rule>
+name: enforce_lucide_icons
+description: Rejects imports from react-native-vector-icons or @expo/vector-icons. Suggests using lucide-react-native instead.
+filters:
+  # Match files where vector icons might be imported
+  - type: file_extension
+    pattern: "\.[jt]sx?$"
+  # Match import statements from the disallowed libraries
+  - type: content
+    pattern: "import\s+.*?\s+from\s+['"](?:react-native-vector-icons(?:/.*)?|@expo/vector-icons)['"];"
+
+actions:
+  - type: reject
+    message: |
+      Please use `lucide-react-native` for icons instead of `react-native-vector-icons` or `@expo/vector-icons`.
+
+      Example:
+      ```typescript
+      // Replace this:
+      // import { Ionicons } from '@expo/vector-icons';
+      // <Ionicons name="md-checkmark-circle" size={32} color="green" />
+
+      // With this:
+      import { CheckCircle } from 'lucide-react-native';
+      // <CheckCircle size={32} color="green" />
+      ```
+
+examples:
+  - input: |
+      // Bad: Importing from @expo/vector-icons
+      import { FontAwesome } from '@expo/vector-icons';
+      import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+
+      function MyComponent() {
+        return <FontAwesome name="rocket" size={30} color="#900" />;
+      }
+    output: "Reject: Use lucide-react-native instead."
+
+  - input: |
+      // Good: Importing from lucide-react-native
+      import { Rocket } from 'lucide-react-native';
+
+      function MyComponent() {
+        return <Rocket size={30} color="#900" />;
+      }
+    output: "Pass: Correct icon library used."
+
+metadata:
+  priority: medium
+  version: 1.0
+  tags: ["icons", "dependencies", "best-practice", "lucide"]
+</rule> 

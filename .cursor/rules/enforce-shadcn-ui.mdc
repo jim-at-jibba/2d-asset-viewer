@@ -1,0 +1,66 @@
+---
+description: 
+globs: src/renderer/**/*.tsx
+alwaysApply: false
+---
+# ShadCN UI Enforcement Rule
+
+Ensures that [ShadCN UI](mdc:https:/ui.shadcn.com) is used for components and that the new CLI is used when generating them.
+
+<rule>
+name: enforce_shadcn_ui
+description: Rejects imports from common alternative UI libraries and suggests using ShadCN UI with its CLI.
+filters:
+  # Match TSX and JSX files
+  - type: file_extension
+    pattern: "\\.[jt]sx?$"
+  # Match import statements from disallowed UI libraries
+  # This pattern looks for imports from a list of libraries.
+  - type: content
+    pattern: "import\\s+.*?\\s+from\\s+['"](mdc:?:@mui/material|@material-ui/core|antd|react-bootstrap|semantic-ui-react|@chakra-ui/react|@nextui-org/react|rsuite|primereact|@headlessui/react|@radix-ui/themes|@blueprintjs/core)['"];"
+
+actions:
+  - type: reject
+    message: |
+      Please use ShadCN UI for components instead of the imported UI library.
+      ShadCN UI provides a set of beautifully designed, accessible, and customizable components.
+
+      To initialize ShadCN UI in your project (if you haven't already):
+      ```bash
+      npx shadcn-ui@latest init
+      ```
+
+      To add ShadCN UI components to your project, use the CLI:
+      ```bash
+      npx shadcn-ui@latest add [component-name]
+      ```
+      For example, to add a button:
+      ```bash
+      npx shadcn-ui@latest add button
+      ```
+      Components are then typically imported from your local components directory (e.g., `@/components/ui/button`), which this rule allows.
+
+examples:
+  - input: |
+      // Bad: Importing from Material UI
+      import Button from '@mui/material/Button';
+
+      function MyComponent() {
+        return <Button>Click Me</Button>;
+      }
+    output: "Reject: Use ShadCN UI instead. The message will guide on using ShadCN CLI."
+
+  - input: |
+      // Good: Using a ShadCN UI component (typically imported like this)
+      import { Button } from "@/components/ui/button"; // This import pattern is NOT targeted by the rule's reject pattern.
+
+      function MyComponent() {
+        return <Button variant="outline">Submit</Button>;
+      }
+    output: "Pass: This code does not import from the disallowed UI libraries."
+
+metadata:
+  priority: high
+  version: 1.0
+  tags: ["components", "ui-library", "shadcn", "best-practice", "cli"]
+</rule>
