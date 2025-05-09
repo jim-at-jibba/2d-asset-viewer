@@ -242,7 +242,6 @@ const AssetGrid: React.FC<AssetGridProps> = ({ folderPath, onAssetSelect }) => {
               ) : (
                 <FileText className="asset-icon" />
               )}
-              <FileText className="asset-icon-fallback hidden" />
             </div>
             <div className="asset-name" title={asset.name}>
               {asset.name}
