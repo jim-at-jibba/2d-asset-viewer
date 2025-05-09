@@ -10,7 +10,7 @@
     - Given a folder is visible in the sidebar, when I click on the expansion arrow, then its subfolders should be displayed.
   - **Dependencies**: None
 
-- [ ] **Folder Expansion/Collapse** (Priority: Critical 1)
+- [x] **Folder Expansion/Collapse** (Priority: Critical 1)
 
   - As a game developer, I want to expand and collapse folder nodes, so that I can focus on relevant directories.
   - **Acceptance Criteria**:
