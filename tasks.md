@@ -18,7 +18,7 @@
     - Given an expanded folder, when I click on it again, then it should collapse.
   - **Dependencies**: Folder Tree Display
 
-- [ ] **Folder Content Indicators** (Priority: Medium 3)
+- [x] **Folder Content Indicators** (Priority: Medium 3)
 
   - As a game developer, I want visual indicators for folders containing sprite assets, so that I can quickly identify relevant directories.
   - **Acceptance Criteria**:

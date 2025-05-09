@@ -5,14 +5,19 @@ import {
   CollapsibleContent,
   CollapsibleTrigger
 } from '../src/components/ui/collapsible'
-import { ChevronRight, Folder as FolderIcon, FileText as FileIcon } from 'lucide-react' // Adjusted import path if necessary
+import {
+  ChevronRight,
+  Folder as FolderIcon,
+  FileText as FileIcon,
+  FolderKanban
+} from 'lucide-react'
 
 interface TreeNode {
   id: string
   name: string
   type: 'folder' | 'file'
   children?: TreeNode[]
-  // Potentially add isAssetFolder or other indicators later
+  isAssetFolder?: boolean
 }
 
 // Mock data - replace with actual file system logic
@@ -26,11 +31,13 @@ const mockFileSystem: TreeNode[] = [
         id: '2',
         name: 'assets',
         type: 'folder',
+        isAssetFolder: true,
         children: [
           {
             id: '3',
             name: 'sprites',
             type: 'folder',
+            isAssetFolder: true,
             children: [
               { id: '4', name: 'player.png', type: 'file' },
               { id: '5', name: 'enemy.png', type: 'file' }
@@ -40,6 +47,7 @@ const mockFileSystem: TreeNode[] = [
             id: '6',
             name: 'tilesets',
             type: 'folder',
+            isAssetFolder: true,
             children: [{ id: '7', name: 'ground.png', type: 'file' }]
           }
         ]
@@ -68,6 +76,9 @@ const TreeItem: React.FC<TreeItemProps> = ({ node, level = 0 }) => {
   const isFolder = node.type === 'folder'
   const indentPadding = level * 20 // 20px per level
 
+  // Determine which folder icon to use
+  const CurrentFolderIcon = node.isAssetFolder ? FolderKanban : FolderIcon
+
   if (isFolder) {
     if (hasChildren) {
       return (
@@ -78,7 +89,7 @@ const TreeItem: React.FC<TreeItemProps> = ({ node, level = 0 }) => {
               className="group flex items-center h-8 w-full text-sm hover:bg-muted/50 cursor-pointer rounded-md" // Adjusted styling
             >
               <ChevronRight className="h-4 w-4 mr-1.5 text-muted-foreground transition-transform duration-200 ease-in-out group-data-[state=open]:rotate-90" />
-              <FolderIcon className="h-4 w-4 mr-1.5 text-blue-500" />
+              <CurrentFolderIcon className="h-4 w-4 mr-1.5 text-blue-500" />
               <span className="node-name truncate">{node.name}</span>
             </div>
           </CollapsibleTrigger>
@@ -98,7 +109,7 @@ const TreeItem: React.FC<TreeItemProps> = ({ node, level = 0 }) => {
           className="flex items-center h-8 w-full text-sm hover:bg-muted/50 rounded-md" // Adjusted styling
         >
           <span className="w-4 mr-1.5" /> {/* Spacer for alignment with chevron */}
-          <FolderIcon className="h-4 w-4 mr-1.5 text-blue-500" />
+          <CurrentFolderIcon className="h-4 w-4 mr-1.5 text-blue-500" />
           <span className="node-name truncate">{node.name}</span>
         </div>
       )
