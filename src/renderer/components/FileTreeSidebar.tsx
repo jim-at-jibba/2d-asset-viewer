@@ -30,6 +30,7 @@ const TreeItem: React.FC<TreeItemProps> = ({ node, level = 0 }) => {
   const hasChildren = node.children && node.children.length > 0
   const isFolder = node.type === 'folder'
   const indentPadding = level * 20 // 20px per level
+  const [isOpen, setIsOpen] = useState(false)
 
   // Determine which folder icon to use
   const CurrentFolderIcon = node.isAssetFolder ? FolderKanban : FolderIcon
@@ -37,13 +38,26 @@ const TreeItem: React.FC<TreeItemProps> = ({ node, level = 0 }) => {
   if (isFolder) {
     if (hasChildren) {
       return (
-        <Collapsible defaultOpen={false} className="tree-item-collapsible">
+        <Collapsible
+          open={isOpen}
+          onOpenChange={(open) => {
+            console.log('Collapsible state changed:', open)
+            setIsOpen(open)
+          }}
+          className="tree-item-collapsible"
+        >
           <CollapsibleTrigger asChild>
             <div
               style={{ paddingLeft: `${indentPadding}px` }}
-              className="group flex items-center h-8 w-full text-sm hover:bg-muted/50 cursor-pointer rounded-md" // Adjusted styling
+              className="flex items-center h-8 w-full text-sm hover:bg-muted/50 cursor-pointer rounded-md" // Adjusted styling
             >
-              <ChevronRight className="h-4 w-4 mr-1.5 text-muted-foreground transition-transform duration-200 ease-in-out group-data-[state=open]:rotate-90" />
+              <ChevronRight
+                style={{
+                  transform: isOpen ? 'rotate(90deg)' : 'rotate(0deg)',
+                  transition: 'transform 0.2s ease-in-out'
+                }}
+                className="h-4 w-4 mr-1.5 text-muted-foreground"
+              />
               <CurrentFolderIcon className="h-4 w-4 mr-1.5 text-blue-500" />
               <span className="node-name truncate">{node.name}</span>
             </div>
