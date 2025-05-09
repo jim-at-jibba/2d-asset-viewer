@@ -117,9 +117,13 @@ declare interface FileTreeItem {
 
 interface FileTreeSidebarProps {
   onAssetSelect?: (assetPath: string) => void
+  onFolderSelect?: (folderPath: string) => void
 }
 
-const FileTreeSidebar: React.FC<FileTreeSidebarProps> = ({ onAssetSelect }): React.ReactElement => {
+const FileTreeSidebar: React.FC<FileTreeSidebarProps> = ({
+  onAssetSelect,
+  onFolderSelect
+}): React.ReactElement => {
   const [fileTree, setFileTree] = useState<TreeNode[]>([])
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const sidebarRef = useRef<HTMLDivElement>(null)
@@ -160,6 +164,11 @@ const FileTreeSidebar: React.FC<FileTreeSidebarProps> = ({ onAssetSelect }): Rea
 
         // Update the file tree with the new node
         setFileTree((prevTree) => [...prevTree, newNode])
+
+        // Notify parent component about folder selection
+        if (onFolderSelect) {
+          onFolderSelect(result.folderPath)
+        }
       } else {
         console.error('Failed to navigate to folder:', result.message)
         showErrorMessage(result.message || 'Failed to navigate to folder')

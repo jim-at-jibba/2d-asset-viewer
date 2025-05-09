@@ -40,14 +40,14 @@
 
 ## Epic 2: Asset Preview (F2)
 
-- [ ] **Transparency Rendering** (Priority: Critical 1)
+- [x] **Transparency Rendering** (Priority: Critical 1)
 
   - As a game artist, I want PNG images to render with transparency properly, so that I can accurately assess how sprites will look in-game.
   - **Acceptance Criteria**:
     - Given I select a PNG with transparency, when it loads in the preview area, then transparent areas should be displayed with a checkered background.
   - **Dependencies**: Asset Selection
 
-- [ ] **Default Sizing** (Priority: High 2)
+- [x] **Default Sizing** (Priority: High 2)
 
   - As a game artist, I want sprites to display at actual size by default, so that I can see their true dimensions.
   - **Acceptance Criteria**:
@@ -55,14 +55,14 @@
     - Given a sprite is displayed, when I check the zoom indicator, then it should show "100%".
   - **Dependencies**: Transparency Rendering
 
-- [ ] **Aspect Ratio Maintenance** (Priority: High 2)
+- [x] **Aspect Ratio Maintenance** (Priority: High 2)
 
   - As a game artist, I want the preview to maintain aspect ratio when resizing, so that sprites don't appear distorted.
   - **Acceptance Criteria**:
     - Given a sprite is displayed, when I resize the preview window, then the sprite should maintain its original aspect ratio.
   - **Dependencies**: Default Sizing
 
-- [ ] **Transparency Background Customization** (Priority: Medium 3)
+- [x] **Transparency Background Customization** (Priority: Medium 3)
   - As a game artist, I want to customize the background color for transparency, so that I can better visualize sprites against different backgrounds.
   - **Acceptance Criteria**:
     - Given I am viewing a sprite with transparency, when I select a different background color from the settings, then the transparent areas should display with that color instead of the default checkered pattern.
@@ -70,35 +70,35 @@
 
 ## Epic 3: Asset Browsing (F3)
 
-- [ ] **Folder Content Display** (Priority: Critical 1)
+- [x] **Folder Content Display** (Priority: Critical 1)
 
   - As a game developer, I want to see all compatible assets in my selected folder, so that I can browse available sprites.
   - **Acceptance Criteria**:
     - Given I select a folder, when the folder loads, then all compatible sprite assets should be displayed in the content area.
   - **Dependencies**: Folder Tree Display
 
-- [ ] **Vertical Scrolling** (Priority: High 2)
+- [x] **Vertical Scrolling** (Priority: High 2)
 
   - As a game developer, I want to scroll vertically through my asset list, so that I can navigate large collections efficiently.
   - **Acceptance Criteria**:
     - Given a folder contains more assets than can be displayed at once, when I use the scroll wheel or scroll bar, then the asset list should scroll vertically.
   - **Dependencies**: Folder Content Display
 
-- [ ] **Filename Display** (Priority: High 2)
+- [x] **Filename Display** (Priority: High 2)
 
   - As a game developer, I want to see filenames displayed below asset thumbnails, so that I can identify assets by name.
   - **Acceptance Criteria**:
     - Given assets are displayed in the content area, when I look at an asset thumbnail, then I should see its filename displayed below it.
   - **Dependencies**: Folder Content Display
 
-- [ ] **Alphabetical Sorting** (Priority: Medium 3)
+- [x] **Alphabetical Sorting** (Priority: Medium 3)
 
   - As a game developer, I want assets sorted alphabetically by default, so that I can find specific assets easily.
   - **Acceptance Criteria**:
     - Given assets are displayed in the content area, when I first open a folder, then assets should be sorted alphabetically by filename.
   - **Dependencies**: Folder Content Display
 
-- [ ] **Sort Options** (Priority: Low 4)
+- [x] **Sort Options** (Priority: Low 4)
   - As a game developer, I want to sort assets by different criteria, so that I can organize them according to my needs.
   - **Acceptance Criteria**:
     - Given assets are displayed, when I click a sort option (name, size, date modified), then the assets should reorder according to that criterion.

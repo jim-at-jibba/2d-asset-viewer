@@ -1,0 +1,116 @@
+.asset-grid-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+
+.asset-grid-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem;
+  border-bottom: 1px solid var(--border-color, #e2e8f0);
+  background-color: var(--background-color, #f8fafc);
+}
+
+.asset-count {
+  font-size: 0.875rem;
+  color: var(--muted-foreground, #64748b);
+}
+
+.sort-controls {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.sort-button {
+  background: transparent;
+  border: none;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  color: var(--muted-foreground, #64748b);
+}
+
+.sort-button:hover {
+  background-color: var(--hover-color, #f1f5f9);
+}
+
+.sort-button.active {
+  font-weight: 600;
+  color: var(--foreground, #0f172a);
+}
+
+.asset-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 1rem;
+  padding: 1rem;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.asset-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+  border: 2px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.asset-item:hover {
+  background-color: var(--hover-color, #f1f5f9);
+}
+
+.asset-item.selected {
+  border-color: var(--primary-color, #3b82f6);
+  background-color: var(--selected-bg, #eff6ff);
+}
+
+.asset-thumbnail {
+  width: 100%;
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--thumbnail-bg, #e2e8f0);
+  border-radius: 0.25rem;
+  margin-bottom: 0.5rem;
+  overflow: hidden;
+}
+
+.asset-icon {
+  width: 40%;
+  height: 40%;
+  color: var(--muted-foreground, #64748b);
+}
+
+.asset-name {
+  font-size: 0.75rem;
+  text-align: center;
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.asset-grid-loading,
+.asset-grid-error,
+.asset-grid-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  font-size: 0.875rem;
+  color: var(--muted-foreground, #64748b);
+}
+
+.asset-grid-error {
+  color: var(--error-color, #ef4444);
+}
