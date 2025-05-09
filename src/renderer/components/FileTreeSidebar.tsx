@@ -26,9 +26,10 @@ interface TreeItemProps {
   node: TreeNode
   level?: number
   onAssetSelect?: (assetPath: string) => void
+  onFolderSelect?: (folderPath: string) => void
 }
 
-const TreeItem: React.FC<TreeItemProps> = ({ node, level = 0, onAssetSelect }) => {
+const TreeItem: React.FC<TreeItemProps> = ({ node, level = 0, onAssetSelect, onFolderSelect }) => {
   const hasChildren = node.children && node.children.length > 0
   const isFolder = node.type === 'folder'
   const indentPadding = level * 20 // 20px per level
@@ -36,6 +37,15 @@ const TreeItem: React.FC<TreeItemProps> = ({ node, level = 0, onAssetSelect }) =
 
   // Determine which folder icon to use
   const CurrentFolderIcon = node.isAssetFolder ? FolderKanban : FolderIcon
+
+  // Handle folder selection
+  const handleFolderClick = (e: React.MouseEvent): void => {
+    if (isFolder && node.path && onFolderSelect) {
+      // Stop propagation to prevent the collapsible trigger from also handling this
+      e.stopPropagation()
+      onFolderSelect(node.path)
+    }
+  }
 
   if (isFolder) {
     if (hasChildren) {
@@ -60,8 +70,10 @@ const TreeItem: React.FC<TreeItemProps> = ({ node, level = 0, onAssetSelect }) =
                 }}
                 className="h-4 w-4 mr-1.5 text-muted-foreground"
               />
-              <CurrentFolderIcon className="h-4 w-4 mr-1.5 text-blue-500" />
-              <span className="node-name truncate">{node.name}</span>
+              <div onClick={handleFolderClick} className="flex items-center flex-1">
+                <CurrentFolderIcon className="h-4 w-4 mr-1.5 text-blue-500" />
+                <span className="node-name truncate">{node.name}</span>
+              </div>
             </div>
           </CollapsibleTrigger>
           <CollapsibleContent className="collapsible-content">
@@ -71,6 +83,7 @@ const TreeItem: React.FC<TreeItemProps> = ({ node, level = 0, onAssetSelect }) =
                 node={child}
                 level={level + 1}
                 onAssetSelect={onAssetSelect}
+                onFolderSelect={onFolderSelect}
               />
             ))}
           </CollapsibleContent>
@@ -82,6 +95,7 @@ const TreeItem: React.FC<TreeItemProps> = ({ node, level = 0, onAssetSelect }) =
         <div
           style={{ paddingLeft: `${indentPadding}px`, cursor: 'pointer' }}
           className="flex items-center h-8 w-full text-sm hover:bg-muted/50 rounded-md"
+          onClick={handleFolderClick}
         >
           <span className="w-4 mr-1.5" /> {/* Spacer for alignment with chevron */}
           <CurrentFolderIcon className="h-4 w-4 mr-1.5 text-blue-500" />
@@ -197,7 +211,13 @@ const FileTreeSidebar: React.FC<FileTreeSidebarProps> = ({
       {/* File Tree */}
       <div className="file-tree-container">
         {fileTree.map((node) => (
-          <TreeItem key={node.id} node={node} level={0} onAssetSelect={onAssetSelect} />
+          <TreeItem
+            key={node.id}
+            node={node}
+            level={0}
+            onAssetSelect={onAssetSelect}
+            onFolderSelect={onFolderSelect}
+          />
         ))}
       </div>
 

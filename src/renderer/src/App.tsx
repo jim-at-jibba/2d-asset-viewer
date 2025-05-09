@@ -6,6 +6,7 @@ import AssetGrid from '../components/AssetGrid'
 function App(): React.JSX.Element {
   const [selectedAssetPath, setSelectedAssetPath] = useState<string | undefined>(undefined)
   const [currentFolderPath, setCurrentFolderPath] = useState<string | undefined>(undefined)
+  const [activeFolderName, setActiveFolderName] = useState<string | undefined>(undefined)
 
   // Function to handle asset selection
   const handleAssetSelect = (assetPath: string): void => {
@@ -18,6 +19,10 @@ function App(): React.JSX.Element {
   const handleFolderSelect = (folderPath: string): void => {
     console.log('Folder selected:', folderPath)
     setCurrentFolderPath(folderPath)
+
+    // Extract the folder name from the path for display purposes
+    const folderName = folderPath.split(/[/\\]/).pop()
+    setActiveFolderName(folderName)
   }
 
   return (
@@ -28,12 +33,15 @@ function App(): React.JSX.Element {
       {/* Main content area */}
       <main className="flex-1 p-4 overflow-hidden flex flex-col">
         {/* Asset grid */}
-        <div className="mb-4 flex-1 overflow-hidden border border-border rounded-md">
+        <div className="flex-1 overflow-hidden border border-border rounded-md">
+          <div className="asset-grid-header p-2 border-b border-border flex items-center">
+            <h2 className="text-lg font-semibold">{activeFolderName || 'No folder selected'}</h2>
+          </div>
           <AssetGrid folderPath={currentFolderPath} onAssetSelect={handleAssetSelect} />
         </div>
 
         {/* Asset preview area */}
-        <div className="flex-1 overflow-hidden border border-border rounded-md">
+        <div className="mt-4 flex-1 overflow-hidden border border-border rounded-md">
           <AssetPreview assetPath={selectedAssetPath} />
         </div>
       </main>

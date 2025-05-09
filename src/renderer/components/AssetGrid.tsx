@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import './AssetGrid.css'
-import { FileText } from 'lucide-react'
+import { FileText, Loader2 } from 'lucide-react'
 
 // Import the FileTreeItem type from global window namespace
 declare global {
@@ -61,6 +61,7 @@ const AssetGrid: React.FC<AssetGridProps> = ({ folderPath, onAssetSelect }) => {
     const fetchAssets = async (): Promise<void> => {
       setLoading(true)
       setError(null)
+      setSelectedAssetId(null) // Clear selection when folder changes
 
       try {
         const result = await window.api.navigateToFolder(folderPath)
@@ -69,6 +70,9 @@ const AssetGrid: React.FC<AssetGridProps> = ({ folderPath, onAssetSelect }) => {
           // Extract just the files (not folders) from the result
           const fileAssets = extractFileAssetsRecursively(result.children)
           setAssets(fileAssets)
+
+          // Log for debugging
+          console.log(`Loaded ${fileAssets.length} assets from ${folderPath}`)
         } else {
           setError(result.message || 'Failed to load assets')
         }
@@ -161,7 +165,12 @@ const AssetGrid: React.FC<AssetGridProps> = ({ folderPath, onAssetSelect }) => {
   }
 
   if (loading) {
-    return <div className="asset-grid-loading">Loading assets...</div>
+    return (
+      <div className="asset-grid-loading">
+        <Loader2 className="animate-spin mr-2" />
+        <span>Loading assets...</span>
+      </div>
+    )
   }
 
   if (error) {
@@ -215,8 +224,25 @@ const AssetGrid: React.FC<AssetGridProps> = ({ folderPath, onAssetSelect }) => {
             tabIndex={0}
           >
             <div className="asset-thumbnail">
-              {/* Show a placeholder until we implement actual thumbnails */}
-              <FileText className="asset-icon" />
+              {/* Use actual image thumbnails when possible */}
+              {asset.path && asset.path.match(/\.(png|jpe?g|gif|webp|svg)$/i) ? (
+                <img
+                  src={`asset://${asset.path}`}
+                  alt={asset.name}
+                  className="asset-image"
+                  onError={(e) => {
+                    console.error(`Failed to load thumbnail for ${asset.name}`)
+                    // Replace with icon on error
+                    e.currentTarget.style.display = 'none'
+                    e.currentTarget.parentElement
+                      ?.querySelector('.asset-icon-fallback')
+                      ?.classList.remove('hidden')
+                  }}
+                />
+              ) : (
+                <FileText className="asset-icon" />
+              )}
+              <FileText className="asset-icon-fallback hidden" />
             </div>
             <div className="asset-name" title={asset.name}>
               {asset.name}
