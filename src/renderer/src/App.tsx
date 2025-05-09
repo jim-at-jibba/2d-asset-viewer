@@ -1,32 +1,36 @@
 import Versions from './components/Versions'
+import FileTreeSidebar from '../components/FileTreeSidebar'
 
 function App(): React.JSX.Element {
   const ipcHandle = (): void => window.electron.ipcRenderer.send('ping')
 
   return (
-    <>
-      <div className="creator">Powered by electron-vite</div>
-      <div className="text">
-        Build an Electron app with <span className="react">React</span>
-        &nbsp;and <span className="ts">TypeScript</span>
-      </div>
-      <p className="tip">
-        Please try pressing <code>F12</code> to open the devTool
-      </p>
-      <div className="actions">
-        <div className="action">
-          <a href="https://electron-vite.org/" target="_blank" rel="noreferrer">
-            Documentation
-          </a>
+    <div style={{ display: 'flex', height: '100vh' }}>
+      <FileTreeSidebar />
+      <main style={{ flexGrow: 1, padding: '1rem', overflowY: 'auto' }}>
+        <div className="creator">Powered by electron-vite</div>
+        <div className="text">
+          Build an Electron app with <span className="react">React</span>
+          &nbsp;and <span className="ts">TypeScript</span>
         </div>
-        <div className="action">
-          <a target="_blank" rel="noreferrer" onClick={ipcHandle}>
-            Send IPC
-          </a>
+        <p className="tip">
+          Please try pressing <code>F12</code> to open the devTool
+        </p>
+        <div className="actions">
+          <div className="action">
+            <a href="https://electron-vite.org/" target="_blank" rel="noreferrer">
+              Documentation
+            </a>
+          </div>
+          <div className="action">
+            <a target="_blank" rel="noreferrer" onClick={ipcHandle}>
+              Send IPC
+            </a>
+          </div>
         </div>
-      </div>
-      <Versions></Versions>
-    </>
+        <Versions></Versions>
+      </main>
+    </div>
   )
 }
 
