@@ -1,4 +1,4 @@
-import { app, shell, BrowserWindow, ipcMain, dialog } from 'electron'
+import { app, shell, BrowserWindow, ipcMain, dialog, protocol } from 'electron'
 import { join, normalize, extname } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
@@ -42,6 +42,33 @@ function createWindow(): void {
 app.whenReady().then(() => {
   // Set app user model id for windows
   electronApp.setAppUserModelId('com.electron')
+
+  // Register the asset:// protocol for loading local files
+  // This is needed for the AssetPreview component to display local images
+  protocol.registerSchemesAsPrivileged([
+    {
+      scheme: 'asset',
+      privileges: {
+        standard: true,
+        supportFetchAPI: true,
+        secure: true,
+        bypassCSP: true, // This is the key property to bypass CSP restrictions
+        corsEnabled: true
+      }
+    }
+  ])
+
+  // Register the asset:// protocol for loading local files
+  protocol.registerFileProtocol('asset', (request, callback) => {
+    const url = request.url.replace('asset://', '')
+    try {
+      // Decode the URL to handle spaces and special characters
+      const decodedUrl = decodeURI(url)
+      return callback(decodedUrl)
+    } catch (error) {
+      console.error('Protocol handler error:', error)
+    }
+  })
 
   // Default open or close DevTools by F12 in development
   // and ignore CommandOrControl + R in production.

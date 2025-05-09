@@ -1,0 +1,113 @@
+.asset-preview {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+.asset-preview .empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+  color: #666;
+  font-size: 1.2rem;
+  text-align: center;
+  gap: 0.5rem;
+}
+
+.asset-preview .loading-indicator,
+.asset-preview .error-message {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 10px 20px;
+  background-color: rgba(0, 0, 0, 0.7);
+  color: white;
+  border-radius: 4px;
+  z-index: 10;
+}
+
+.asset-preview .error-message {
+  background-color: rgba(220, 53, 69, 0.9);
+}
+
+/* Controls panel */
+.controls-panel {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 8px 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 20;
+  font-size: 12px;
+}
+
+/* Zoom information display */
+.zoom-info {
+  display: flex;
+  gap: 8px;
+}
+
+/* Background options */
+.background-options {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.background-buttons {
+  display: flex;
+  gap: 4px;
+}
+
+.bg-option {
+  width: 24px;
+  height: 24px;
+  border: 1px solid #888;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.bg-option:hover {
+  transform: scale(1.1);
+}
+
+.bg-option.active {
+  border: 2px solid #fff;
+  transform: scale(1.05);
+}
+
+.image-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  /* Background pattern is now set via inline styles */
+  overflow: auto; /* Allow scrolling when image is larger than container */
+}
+
+.preview-image {
+  display: block;
+  /* Remove max-width and max-height constraints to show actual size */
+  /* max-width: 100%;
+  max-height: 100%; */
+  object-fit: contain;
+  /* Allow the checkered background to show through transparent parts */
+  image-rendering: pixelated; /* Keeps pixel art crisp when zoomed */
+}

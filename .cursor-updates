@@ -4,3 +4,10 @@
 - Removed drag-and-drop functionality due to compatibility issues
 - Added a folder picker button that reliably handles folder selection across platforms
 - Fixed issue with tree population after folder selection
+- Implemented Asset Preview component with transparency rendering for PNG images (Epic 2)
+- Added protocol handler to load local images with transparency properly displayed
+- Implemented default sizing feature to show sprites at actual pixel dimensions
+- Added aspect ratio maintenance for proper image display
+- Added customizable transparency background with multiple options (checkered, black, white, gray, transparent)
+- Implemented mouse wheel zoom functionality with zoom level display
+- Fixed asset protocol handling by registering it as a privileged scheme to bypass CSP restrictions

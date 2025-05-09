@@ -25,14 +25,14 @@
     - Given a folder contains sprite assets, when I view the folder tree, then that folder should have a distinct visual indicator.
   - **Dependencies**: Folder Tree Display
 
-- [ ] **Drag-and-Drop Navigation** (Priority: Low 4)
+- [x] **Drag-and-Drop Navigation** (Priority: Low 4)
 
   - As a game developer, I want to use drag-and-drop for folder navigation, so that I can work more efficiently.
   - **Acceptance Criteria**:
     - Given I have the application open, when I drag a folder from my system's file explorer into the app, then the application should navigate to that folder.
   - **Dependencies**: Folder Tree Display
 
-- [ ] **Last Folder Memory** (Priority: Medium 3)
+- [x] **Last Folder Memory** (Priority: Medium 3)
   - As a game developer, I want the application to remember my last visited folder, so that I can resume my work quickly after restarting.
   - **Acceptance Criteria**:
     - Given I have previously browsed to a specific folder, when I reopen the application, then it should automatically navigate to that folder.

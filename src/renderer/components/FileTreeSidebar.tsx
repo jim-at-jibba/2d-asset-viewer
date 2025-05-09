@@ -19,14 +19,16 @@ interface TreeNode {
   type: 'folder' | 'file'
   children?: TreeNode[]
   isAssetFolder?: boolean
+  path?: string
 }
 
 interface TreeItemProps {
   node: TreeNode
   level?: number
+  onAssetSelect?: (assetPath: string) => void
 }
 
-const TreeItem: React.FC<TreeItemProps> = ({ node, level = 0 }) => {
+const TreeItem: React.FC<TreeItemProps> = ({ node, level = 0, onAssetSelect }) => {
   const hasChildren = node.children && node.children.length > 0
   const isFolder = node.type === 'folder'
   const indentPadding = level * 20 // 20px per level
@@ -64,7 +66,12 @@ const TreeItem: React.FC<TreeItemProps> = ({ node, level = 0 }) => {
           </CollapsibleTrigger>
           <CollapsibleContent className="collapsible-content">
             {node.children?.map((child) => (
-              <TreeItem key={child.id} node={child} level={level + 1} />
+              <TreeItem
+                key={child.id}
+                node={child}
+                level={level + 1}
+                onAssetSelect={onAssetSelect}
+              />
             ))}
           </CollapsibleContent>
         </Collapsible>
@@ -84,11 +91,12 @@ const TreeItem: React.FC<TreeItemProps> = ({ node, level = 0 }) => {
     }
   }
 
-  // File node
+  // File node - update to handle click for asset selection
   return (
     <div
       style={{ paddingLeft: `${indentPadding}px` }}
-      className="flex items-center h-8 w-full text-sm hover:bg-muted/50 rounded-md" // Adjusted styling
+      className="flex items-center h-8 w-full text-sm hover:bg-muted/50 rounded-md cursor-pointer" // Added cursor-pointer
+      onClick={() => onAssetSelect && node.path && onAssetSelect(node.path)}
     >
       <span className="w-4 mr-1.5" /> {/* Spacer for alignment with chevron */}
       <FileIcon className="h-4 w-4 mr-1.5 text-foreground/70" />
@@ -107,7 +115,11 @@ declare interface FileTreeItem {
   children?: FileTreeItem[]
 }
 
-const FileTreeSidebar: React.FC = (): React.ReactElement => {
+interface FileTreeSidebarProps {
+  onAssetSelect?: (assetPath: string) => void
+}
+
+const FileTreeSidebar: React.FC<FileTreeSidebarProps> = ({ onAssetSelect }): React.ReactElement => {
   const [fileTree, setFileTree] = useState<TreeNode[]>([])
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const sidebarRef = useRef<HTMLDivElement>(null)
@@ -128,7 +140,8 @@ const FileTreeSidebar: React.FC = (): React.ReactElement => {
             name: item.name,
             type: item.type,
             isAssetFolder: item.type === 'folder' ? true : undefined,
-            children: item.children?.map(mapToTreeNode) || undefined
+            children: item.children?.map(mapToTreeNode) || undefined,
+            path: item.path
           }
         }
 
@@ -138,7 +151,8 @@ const FileTreeSidebar: React.FC = (): React.ReactElement => {
           name: result.folderName || folderPath.split(/[/\\]/).pop() || 'Selected Folder',
           type: 'folder',
           isAssetFolder: true,
-          children: result.children?.map(mapToTreeNode) || []
+          children: result.children?.map(mapToTreeNode) || [],
+          path: result.folderPath
         }
 
         // Log the node we're adding to help debug
@@ -174,7 +188,7 @@ const FileTreeSidebar: React.FC = (): React.ReactElement => {
       {/* File Tree */}
       <div className="file-tree-container">
         {fileTree.map((node) => (
-          <TreeItem key={node.id} node={node} level={0} />
+          <TreeItem key={node.id} node={node} level={0} onAssetSelect={onAssetSelect} />
         ))}
       </div>
 

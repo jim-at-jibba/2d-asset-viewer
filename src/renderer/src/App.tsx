@@ -1,34 +1,28 @@
-import Versions from './components/Versions'
+import { useState } from 'react'
 import FileTreeSidebar from '../components/FileTreeSidebar'
+import AssetPreview from '../components/AssetPreview'
 
 function App(): React.JSX.Element {
-  const ipcHandle = (): void => window.electron.ipcRenderer.send('ping')
+  const [selectedAssetPath, setSelectedAssetPath] = useState<string | undefined>(undefined)
+
+  // Function to handle asset selection
+  const handleAssetSelect = (assetPath: string): void => {
+    console.log('Asset selected:', assetPath)
+    // Add the asset:// protocol to the path
+    setSelectedAssetPath(`asset://${assetPath}`)
+  }
 
   return (
-    <div style={{ display: 'flex', height: '100vh' }}>
-      <FileTreeSidebar />
-      <main style={{ flexGrow: 1, padding: '1rem', overflowY: 'auto' }}>
-        <div className="creator">Powered by electron-vite</div>
-        <div className="text">
-          Build an Electron app with <span className="react">React</span>
-          &nbsp;and <span className="ts">TypeScript</span>
+    <div className="flex h-screen bg-background text-foreground">
+      {/* File tree sidebar */}
+      <FileTreeSidebar onAssetSelect={handleAssetSelect} />
+
+      {/* Main content area */}
+      <main className="flex-1 p-4 overflow-hidden flex flex-col">
+        {/* Asset preview area */}
+        <div className="flex-1 overflow-hidden border border-border rounded-md">
+          <AssetPreview assetPath={selectedAssetPath} />
         </div>
-        <p className="tip">
-          Please try pressing <code>F12</code> to open the devTool
-        </p>
-        <div className="actions">
-          <div className="action">
-            <a href="https://electron-vite.org/" target="_blank" rel="noreferrer">
-              Documentation
-            </a>
-          </div>
-          <div className="action">
-            <a target="_blank" rel="noreferrer" onClick={ipcHandle}>
-              Send IPC
-            </a>
-          </div>
-        </div>
-        <Versions></Versions>
       </main>
     </div>
   )
