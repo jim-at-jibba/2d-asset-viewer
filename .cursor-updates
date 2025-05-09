@@ -1,0 +1,6 @@
+# Cursor Updates
+
+- Implemented folder navigation feature allowing users to navigate to selected folders in the file tree
+- Removed drag-and-drop functionality due to compatibility issues
+- Added a folder picker button that reliably handles folder selection across platforms
+- Fixed issue with tree population after folder selection

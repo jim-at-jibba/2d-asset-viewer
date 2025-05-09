@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useRef } from 'react'
 import './FileTreeSidebar.css'
 import {
   Collapsible,
@@ -11,6 +11,7 @@ import {
   FileText as FileIcon,
   FolderKanban
 } from 'lucide-react'
+import FolderPicker from './FilePicker'
 
 interface TreeNode {
   id: string
@@ -19,52 +20,6 @@ interface TreeNode {
   children?: TreeNode[]
   isAssetFolder?: boolean
 }
-
-// Mock data - replace with actual file system logic
-const mockFileSystem: TreeNode[] = [
-  {
-    id: '1',
-    name: 'Project Root',
-    type: 'folder',
-    children: [
-      {
-        id: '2',
-        name: 'assets',
-        type: 'folder',
-        isAssetFolder: true,
-        children: [
-          {
-            id: '3',
-            name: 'sprites',
-            type: 'folder',
-            isAssetFolder: true,
-            children: [
-              { id: '4', name: 'player.png', type: 'file' },
-              { id: '5', name: 'enemy.png', type: 'file' }
-            ]
-          },
-          {
-            id: '6',
-            name: 'tilesets',
-            type: 'folder',
-            isAssetFolder: true,
-            children: [{ id: '7', name: 'ground.png', type: 'file' }]
-          }
-        ]
-      },
-      {
-        id: '8',
-        name: 'src',
-        type: 'folder',
-        children: [
-          { id: '9', name: 'index.ts', type: 'file' },
-          { id: '10', name: 'App.tsx', type: 'file' }
-        ]
-      },
-      { id: '11', name: 'package.json', type: 'file' }
-    ]
-  }
-]
 
 interface TreeItemProps {
   node: TreeNode
@@ -94,7 +49,6 @@ const TreeItem: React.FC<TreeItemProps> = ({ node, level = 0 }) => {
             </div>
           </CollapsibleTrigger>
           <CollapsibleContent className="collapsible-content">
-            {/* Children TreeItem components will handle their own padding based on level + 1 */}
             {node.children?.map((child) => (
               <TreeItem key={child.id} node={child} level={level + 1} />
             ))}
@@ -129,18 +83,89 @@ const TreeItem: React.FC<TreeItemProps> = ({ node, level = 0 }) => {
   )
 }
 
+// Import the FileTreeItem type from preload
+declare interface FileTreeItem {
+  id: string
+  name: string
+  type: 'folder' | 'file'
+  path?: string
+  isAssetFolder?: boolean
+  children?: FileTreeItem[]
+}
+
 const FileTreeSidebar: React.FC = (): React.ReactElement => {
-  const [fileTree] = React.useState<TreeNode[]>(mockFileSystem) // In a real app, this would come from props or a global state/API call
+  const [fileTree, setFileTree] = useState<TreeNode[]>([])
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
+  const sidebarRef = useRef<HTMLDivElement>(null)
+
+  // Handle folder selection from the FolderPicker component
+  const handleFolderSelect = async (folderPath: string): Promise<void> => {
+    try {
+      const result = await window.api.navigateToFolder(folderPath)
+      console.log('Navigation result:', result)
+
+      if (result.success && result.folderPath) {
+        console.log('Successfully navigated to:', result.folderPath)
+
+        // Recursive function to map API response to TreeNode structure
+        const mapToTreeNode = (item: FileTreeItem): TreeNode => {
+          return {
+            id: item.id,
+            name: item.name,
+            type: item.type,
+            isAssetFolder: item.type === 'folder' ? true : undefined,
+            children: item.children?.map(mapToTreeNode) || undefined
+          }
+        }
+
+        // Create a proper folder structure to add to the tree
+        const newNode: TreeNode = {
+          id: `folder-${Date.now()}`,
+          name: result.folderName || folderPath.split(/[/\\]/).pop() || 'Selected Folder',
+          type: 'folder',
+          isAssetFolder: true,
+          children: result.children?.map(mapToTreeNode) || []
+        }
+
+        // Log the node we're adding to help debug
+        console.log('Adding new folder node to tree:', newNode)
+
+        // Update the file tree with the new node
+        setFileTree((prevTree) => [...prevTree, newNode])
+      } else {
+        console.error('Failed to navigate to folder:', result.message)
+        showErrorMessage(result.message || 'Failed to navigate to folder')
+      }
+    } catch (error) {
+      console.error('Error during folder navigation:', error)
+      showErrorMessage('An unexpected error occurred')
+    }
+  }
+
+  // Helper to show error message
+  const showErrorMessage = (message: string): void => {
+    setErrorMessage(message)
+    setTimeout(() => setErrorMessage(null), 5000)
+  }
 
   return (
     <div
+      ref={sidebarRef}
       className="file-tree-sidebar p-2 space-y-0.5 text-sm select-none"
-      style={{ width: '280px' /* Example width */ }}
+      style={{ width: '280px', position: 'relative' }}
     >
-      {/* <h3 className="px-2 py-1.5 text-lg font-semibold tracking-tight">File Explorer</h3> */}
-      {fileTree.map((node) => (
-        <TreeItem key={node.id} node={node} level={0} /> // Start top-level items at level 0
-      ))}
+      {/* Folder Picker Button */}
+      <FolderPicker onFolderSelect={handleFolderSelect} onError={showErrorMessage} />
+
+      {/* File Tree */}
+      <div className="file-tree-container">
+        {fileTree.map((node) => (
+          <TreeItem key={node.id} node={node} level={0} />
+        ))}
+      </div>
+
+      {/* Error message */}
+      {errorMessage && <div className="error-message">{errorMessage}</div>}
     </div>
   )
 }

@@ -1,8 +1,41 @@
 import { ElectronAPI } from '@electron-toolkit/preload'
 
+interface TreeNode {
+  id: string
+  name: string
+  type: 'folder' | 'file'
+  children?: TreeNode[]
+  isAssetFolder?: boolean
+}
+
+// Define a recursive type for file tree items
+interface FileTreeItem {
+  id: string
+  name: string
+  type: 'folder' | 'file'
+  path?: string
+  isAssetFolder?: boolean
+  children?: FileTreeItem[]
+}
+
+interface API {
+  navigateToFolder: (folderPath: string) => Promise<{
+    success: boolean
+    folderPath?: string
+    folderName?: string
+    message?: string
+    children?: FileTreeItem[]
+  }>
+  selectFolder: () => Promise<{
+    success: boolean
+    folderPath?: string
+    message?: string
+  }>
+}
+
 declare global {
   interface Window {
     electron: ElectronAPI
-    api: unknown
+    api: API
   }
 }
