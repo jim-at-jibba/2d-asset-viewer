@@ -424,20 +424,37 @@ const AssetPreview: React.FC<AssetPreviewProps> = ({
 
   // Get image style for sprite sheet frames
   const getSpriteSheetImageStyle = (): React.CSSProperties => {
-    if (!isSpriteSheet || currentFrameIndex >= spriteSheetFrames.length || !imageDimensions) {
+    if (
+      !isSpriteSheet ||
+      spriteSheetFrames.length === 0 ||
+      !imageDimensions || // Ensure image metadata is loaded
+      currentFrameIndex < 0 ||
+      currentFrameIndex >= spriteSheetFrames.length
+    ) {
       return {}
     }
 
-    const frame = spriteSheetFrames[currentFrameIndex]
+    const currentDisplayFrame = spriteSheetFrames[currentFrameIndex]
+    // Assuming all frames in a spritesheet share the same dimensions.
+    // Use the first frame to determine the size of our "masking" viewport.
+    const maskFrameDimensions = spriteSheetFrames[0]
     const zoom = zoomLevel / 100
 
     return {
-      width: `${imageDimensions.width}px`,
-      height: `${imageDimensions.height}px`,
-      objectFit: 'none',
-      objectPosition: `-${frame.x}px -${frame.y}px`,
+      // Set the <img> element's dimensions to that of a single frame (the "mask").
+      width: `${maskFrameDimensions.width}px`,
+      height: `${maskFrameDimensions.height}px`,
+      objectFit: 'none', // This is critical for objectPosition to work as intended.
+
+      // Shift the full spritesheet image. The part of the image at
+      // (currentDisplayFrame.x, currentDisplayFrame.y) will be aligned
+      // with the top-left of our (now smaller) <img> element.
+      // This animates the content within the mask.
+      objectPosition: `-${currentDisplayFrame.x}px -${currentDisplayFrame.y}px`,
+
+      // Apply zoom and pan transformations to the masked, animating frame.
       transform: `scale(${zoom}) translate(${panOffset.x / zoom}px, ${panOffset.y / zoom}px)`,
-      transformOrigin: 'top left'
+      transformOrigin: 'top left' // Ensures transforms originate from the top-left of the mask.
     }
   }
 
