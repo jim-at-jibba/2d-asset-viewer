@@ -187,6 +187,7 @@
   - As a game artist, I want the application to detect frame-based animation sequences, so that I can preview animations easily.
   - **Acceptance Criteria**:
     - Given a folder contains numbered sprite frames (e.g., run_01.png, run_02.png), when I select the first frame, then the application should recognize it as part of an animation sequence and display animation controls.
+    - This needs to also work for sprites frames in a single image
   - **Dependencies**: Selection Highlighting
 
 - [ ] **Animation Playback Controls** (Priority: High 2)

@@ -4,7 +4,9 @@ import { electronAPI } from '@electron-toolkit/preload'
 // Custom APIs for renderer
 const api = {
   navigateToFolder: (folderPath: string) => ipcRenderer.invoke('navigate-to-folder', folderPath),
-  selectFolder: () => ipcRenderer.invoke('select-folder')
+  selectFolder: () => ipcRenderer.invoke('select-folder'),
+  getAnimationFrames: (folderPath: string, baseName: string, extension: string) =>
+    ipcRenderer.invoke('get-animation-frames', folderPath, baseName, extension)
 }
 
 // Use `contextBridge` APIs to expose Electron APIs to

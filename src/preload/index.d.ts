@@ -31,6 +31,15 @@ interface API {
     folderPath?: string
     message?: string
   }>
+  getAnimationFrames: (
+    folderPath: string,
+    baseName: string,
+    extension: string
+  ) => Promise<{
+    success: boolean
+    frames: Array<{ path: string; name: string }>
+    message?: string
+  }>
 }
 
 declare global {

@@ -135,6 +135,12 @@ app.whenReady().then(() => {
     children?: FileTreeItem[]
   }
 
+  // Define interface for animation frame detection
+  interface AnimationFrame {
+    path: string
+    name: string
+  }
+
   // Handle folder navigation
   ipcMain.handle('navigate-to-folder', async (_, folderPath) => {
     try {
@@ -265,6 +271,60 @@ app.whenReady().then(() => {
       console.error('Error navigating to folder:', error)
       const errorMessage = error instanceof Error ? error.message : String(error)
       return { success: false, message: errorMessage }
+    }
+  })
+
+  // After defining your other IPC handlers
+  // Add this handler to get animation frames
+  ipcMain.handle('get-animation-frames', async (_, folderPath, baseName, extension) => {
+    try {
+      if (!folderPath || !existsSync(folderPath)) {
+        return { success: false, message: 'Invalid folder path', frames: [] }
+      }
+
+      // Get all files in the directory
+      const files = readdirSync(folderPath, { withFileTypes: true })
+        .filter((file) => file.isFile())
+        .map((file) => file.name)
+
+      // Create a regex pattern to match files with the same base name but different sequence numbers
+      // This handles patterns like:
+      // - walk_01.png, walk_02.png
+      // - run-1.png, run-2.png
+      // - jump001.png, jump002.png
+      const regexPattern = new RegExp(
+        `^${baseName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}[-_]?\\d+${extension}$`
+      )
+
+      // Filter files that match the pattern
+      const frameFiles = files.filter((file) => regexPattern.test(file))
+
+      // Sort them numerically by the sequence number
+      frameFiles.sort((a, b) => {
+        // Extract number from filename
+        const numA = parseInt(a.replace(/[^\d]/g, ''), 10)
+        const numB = parseInt(b.replace(/[^\d]/g, ''), 10)
+        return numA - numB
+      })
+
+      // Map to full paths
+      const frames: AnimationFrame[] = frameFiles.map((file) => ({
+        path: join(folderPath, file),
+        name: file
+      }))
+
+      return {
+        success: true,
+        frames,
+        message: `Found ${frames.length} animation frames`
+      }
+    } catch (error) {
+      console.error('Error getting animation frames:', error)
+      return {
+        success: false,
+        message: error instanceof Error ? error.message : 'Unknown error',
+        frames: []
+      }
     }
   })
 

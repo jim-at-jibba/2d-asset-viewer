@@ -42,7 +42,7 @@ function App(): React.JSX.Element {
 
         {/* Asset preview area */}
         <div className="mt-4 flex-1 overflow-hidden border border-border rounded-md">
-          <AssetPreview assetPath={selectedAssetPath} />
+          <AssetPreview assetPath={selectedAssetPath} folderPath={currentFolderPath} />
         </div>
       </main>
     </div>
