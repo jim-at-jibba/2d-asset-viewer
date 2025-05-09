@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import './AssetPreview.css'
 import { Play, Pause, ChevronLeft, ChevronRight, FastForward, Rewind } from 'lucide-react'
 
@@ -68,6 +68,12 @@ interface SpriteSheetFrame {
   height: number
 }
 
+// Add this new interface for sprite sheet config
+interface SpriteSheetConfig {
+  rows: number
+  columns: number
+}
+
 const AssetPreview: React.FC<AssetPreviewProps> = ({
   assetPath,
   folderPath,
@@ -83,6 +89,11 @@ const AssetPreview: React.FC<AssetPreviewProps> = ({
   const imageRef = useRef<HTMLImageElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
 
+  // Add pan related states
+  const [isPanning, setIsPanning] = useState<boolean>(false)
+  const [panOffset, setPanOffset] = useState<{ x: number; y: number }>({ x: 0, y: 0 })
+  const [startPanPoint, setStartPanPoint] = useState<{ x: number; y: number }>({ x: 0, y: 0 })
+
   // Animation related states
   const [isAnimationSequence, setIsAnimationSequence] = useState<boolean>(false)
   const [animationFrames, setAnimationFrames] = useState<AnimationFrame[]>([])
@@ -92,6 +103,13 @@ const AssetPreview: React.FC<AssetPreviewProps> = ({
   const [isPlaying, setIsPlaying] = useState<boolean>(false)
   const [animationSpeed, setAnimationSpeed] = useState<number>(10) // frames per second
   const animationTimerRef = useRef<number | null>(null)
+
+  // Add sprite sheet configuration state
+  const [spriteSheetConfig, setSpriteSheetConfig] = useState<SpriteSheetConfig>({
+    rows: 4,
+    columns: 4
+  })
+  const [showSpriteSheetConfig, setShowSpriteSheetConfig] = useState<boolean>(false)
 
   // Clean up animation timer when component unmounts
   useEffect(() => {
@@ -126,20 +144,26 @@ const AssetPreview: React.FC<AssetPreviewProps> = ({
     setIsSpriteSheetFrames([])
     setCurrentFrameIndex(0)
     setIsPlaying(false)
+    setShowSpriteSheetConfig(false)
 
     try {
       // First check if this is a sprite sheet by looking for special naming patterns
       // For example: "character_sheet.png" or "animation_spritesheet.png"
+      const fileName = currentAssetPath.split('/').pop()?.toLowerCase() || ''
+
       if (
-        currentAssetPath.toLowerCase().includes('sheet') ||
-        currentAssetPath.toLowerCase().includes('sprite')
+        fileName.includes('sheet') ||
+        fileName.includes('sprite') ||
+        fileName.includes('atlas') ||
+        fileName.includes('tileset')
       ) {
-        await detectSpriteSheet(currentAssetPath)
+        console.log('Detected potential sprite sheet based on filename')
+        // We need to wait for the image to load before detecting sprite sheet
+        // The actual sprite sheet detection happens in handleImageLoad
         return
       }
 
       // Otherwise, look for sequence patterns in the filename
-      const fileName = currentAssetPath.split('/').pop() || ''
       const baseNameMatch = fileName.match(/^(.*?)(?:[-_]?(?:0*(\d+)))?(\.[^.]+)?$/)
 
       if (baseNameMatch) {
@@ -201,22 +225,16 @@ const AssetPreview: React.FC<AssetPreviewProps> = ({
   // Detect sprite sheet animation frames
   const detectSpriteSheet = async (filePath: string): Promise<void> => {
     try {
-      // filePath would be used in a real implementation to load metadata
       console.log(`Detecting sprite sheet from: ${filePath}`)
 
-      // In a real implementation, we would:
-      // 1. Check if there's a metadata JSON file with the same name that describes the frames
-      // 2. Or use some heuristics to detect uniform grid patterns in the image
-
-      // For demo purposes, we'll assume a simple grid layout
+      // Only process if we have image dimensions
       if (imageRef.current && imageDimensions) {
         const imgWidth = imageDimensions.width
         const imgHeight = imageDimensions.height
 
-        // Assume frames are arranged in a grid
-        // For demo, we'll assume 4 rows x 4 columns
-        const framesPerRow = 4
-        const numRows = 4
+        // Use the configuration from state
+        const framesPerRow = spriteSheetConfig.columns
+        const numRows = spriteSheetConfig.rows
 
         const frameWidth = imgWidth / framesPerRow
         const frameHeight = imgHeight / numRows
@@ -238,6 +256,8 @@ const AssetPreview: React.FC<AssetPreviewProps> = ({
           setIsSpriteSheetFrames(frames)
           setIsSpriteSheet(true)
           console.log(`Detected sprite sheet with ${frames.length} frames`)
+          // Show the configuration UI when a sprite sheet is detected
+          setShowSpriteSheetConfig(true)
         }
       }
     } catch (error) {
@@ -312,36 +332,45 @@ const AssetPreview: React.FC<AssetPreviewProps> = ({
   // Handle image load to set actual dimensions
   const handleImageLoad = (): void => {
     setIsLoading(false)
-    if (imageRef.current) {
-      // Store the natural (actual) dimensions of the image
-      setImageDimensions({
-        width: imageRef.current.naturalWidth,
-        height: imageRef.current.naturalHeight
-      })
+    setError(null)
 
-      // If this is a potential sprite sheet, try to detect frames
-      if (
-        assetPath &&
-        (assetPath.toLowerCase().includes('sheet') || assetPath.toLowerCase().includes('sprite'))
-      ) {
-        detectSpriteSheet(assetPath)
+    if (imageRef.current) {
+      // Get natural dimensions of the image
+      const { naturalWidth, naturalHeight } = imageRef.current
+      setImageDimensions({ width: naturalWidth, height: naturalHeight })
+
+      // If this might be a sprite sheet based on the filename, try to detect it now
+      if (assetPath) {
+        const fileName = assetPath.split('/').pop()?.toLowerCase() || ''
+        if (
+          fileName.includes('sheet') ||
+          fileName.includes('sprite') ||
+          fileName.includes('atlas') ||
+          fileName.includes('tileset')
+        ) {
+          detectSpriteSheet(assetPath)
+        }
       }
     }
   }
 
-  // Handle mouse wheel zoom
-  const handleWheel = useCallback(
-    (e: React.WheelEvent<HTMLDivElement>): void => {
-      e.preventDefault()
+  // Handle mouse wheel for zooming
+  const handleWheel = (e: React.WheelEvent<HTMLDivElement>): void => {
+    // Prevent the default scroll behavior
+    e.preventDefault()
 
-      // Calculate new zoom level - zooming in/out by 10% per wheel movement
-      const zoomDelta = e.deltaY < 0 ? 10 : -10
-      const newZoom = Math.max(10, Math.min(500, zoomLevel + zoomDelta)) // Limit zoom between 10% and 500%
+    // Determine the direction of the wheel
+    const delta = Math.sign(e.deltaY) * -1
 
-      setZoomLevel(newZoom)
-    },
-    [zoomLevel]
-  )
+    // Calculate the new zoom level
+    // Delta is either 1 or -1
+    // For zoom in/out, change by 10% per wheel tick
+    const zoomChange = delta * 10
+    const newZoom = Math.max(10, Math.min(400, zoomLevel + zoomChange))
+
+    // Update the zoom level
+    setZoomLevel(newZoom)
+  }
 
   // Get background style based on selected option
   const getBackgroundStyle = (): React.CSSProperties => {
@@ -377,21 +406,96 @@ const AssetPreview: React.FC<AssetPreviewProps> = ({
     setBackgroundOption(optionId)
   }
 
+  // Add handler for sprite sheet config changes
+  const handleSpriteSheetConfigChange = (field: keyof SpriteSheetConfig, value: number): void => {
+    // Ensure value is at least 1
+    const validValue = Math.max(1, value)
+
+    setSpriteSheetConfig((prev) => ({
+      ...prev,
+      [field]: validValue
+    }))
+
+    // Re-detect the sprite sheet with the new configuration
+    if (assetPath && isSpriteSheet) {
+      detectSpriteSheet(assetPath)
+    }
+  }
+
   // Get image style for sprite sheet frames
   const getSpriteSheetImageStyle = (): React.CSSProperties => {
-    if (!isSpriteSheet || spriteSheetFrames.length === 0 || !imageDimensions) {
+    if (!isSpriteSheet || currentFrameIndex >= spriteSheetFrames.length || !imageDimensions) {
       return {}
     }
 
     const frame = spriteSheetFrames[currentFrameIndex]
+    const zoom = zoomLevel / 100
 
     return {
-      width: `${frame.width * (zoomLevel / 100)}px`,
-      height: `${frame.height * (zoomLevel / 100)}px`,
+      width: `${imageDimensions.width}px`,
+      height: `${imageDimensions.height}px`,
       objectFit: 'none',
-      objectPosition: `-${frame.x * (zoomLevel / 100)}px -${frame.y * (zoomLevel / 100)}px`,
-      transform: `scale(${zoomLevel / 100})`,
+      objectPosition: `-${frame.x}px -${frame.y}px`,
+      transform: `scale(${zoom}) translate(${panOffset.x / zoom}px, ${panOffset.y / zoom}px)`,
       transformOrigin: 'top left'
+    }
+  }
+
+  // Add a manual toggle for sprite sheet mode
+  const toggleSpriteSheetMode = (): void => {
+    if (isSpriteSheet) {
+      // Turn off sprite sheet mode
+      setIsSpriteSheet(false)
+      setIsSpriteSheetFrames([])
+      setShowSpriteSheetConfig(false)
+    } else if (assetPath && imageDimensions) {
+      // Turn on sprite sheet mode
+      detectSpriteSheet(assetPath)
+    }
+  }
+
+  // Add mouse down handler for starting panning
+  const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>): void => {
+    // Only start panning if we're zoomed in (zoomLevel > 100)
+    if (zoomLevel <= 100) return
+
+    // Set panning flag and capture start position
+    setIsPanning(true)
+    setStartPanPoint({ x: e.clientX, y: e.clientY })
+  }
+
+  // Add mouse move handler for panning
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>): void => {
+    // Only pan if we're in panning mode
+    if (!isPanning) return
+
+    // Calculate the movement delta
+    const dx = e.clientX - startPanPoint.x
+    const dy = e.clientY - startPanPoint.y
+
+    // Update the pan offset
+    setPanOffset({ x: panOffset.x + dx, y: panOffset.y + dy })
+
+    // Update the start point for the next move
+    setStartPanPoint({ x: e.clientX, y: e.clientY })
+  }
+
+  // Add mouse up/out handler to stop panning
+  const handleMouseUp = (): void => {
+    setIsPanning(false)
+  }
+
+  // Reset pan offset when zoom level or asset changes
+  useEffect(() => {
+    setPanOffset({ x: 0, y: 0 })
+  }, [zoomLevel, assetPath])
+
+  // Get style for the image-container div
+  const getContainerStyle = (): React.CSSProperties => {
+    const baseStyle = getBackgroundStyle()
+    return {
+      ...baseStyle,
+      cursor: isPanning ? 'grabbing' : zoomLevel > 100 ? 'grab' : 'default'
     }
   }
 
@@ -428,6 +532,53 @@ const AssetPreview: React.FC<AssetPreviewProps> = ({
             </span>
             <span>|</span>
             <span>{zoomLevel}%</span>
+            {/* Add sprite sheet toggle button */}
+            <button
+              className="sprite-sheet-toggle"
+              onClick={toggleSpriteSheetMode}
+              title={isSpriteSheet ? 'Disable Sprite Sheet Mode' : 'Enable Sprite Sheet Mode'}
+            >
+              {isSpriteSheet ? 'Exit Sprite Sheet' : 'Sprite Sheet'}
+            </button>
+          </div>
+        )}
+
+        {/* Sprite Sheet Configuration */}
+        {showSpriteSheetConfig && (
+          <div className="sprite-sheet-config">
+            <div className="config-title">Sprite Sheet Settings</div>
+            <div className="config-controls">
+              <label>
+                Rows:
+                <input
+                  type="number"
+                  min="1"
+                  value={spriteSheetConfig.rows}
+                  onChange={(e) =>
+                    handleSpriteSheetConfigChange('rows', parseInt(e.target.value, 10))
+                  }
+                />
+              </label>
+              <label>
+                Columns:
+                <input
+                  type="number"
+                  min="1"
+                  value={spriteSheetConfig.columns}
+                  onChange={(e) =>
+                    handleSpriteSheetConfigChange('columns', parseInt(e.target.value, 10))
+                  }
+                />
+              </label>
+              <button
+                className="apply-button"
+                onClick={() => {
+                  if (assetPath) detectSpriteSheet(assetPath)
+                }}
+              >
+                Apply
+              </button>
+            </div>
           </div>
         )}
 
@@ -497,7 +648,11 @@ const AssetPreview: React.FC<AssetPreviewProps> = ({
         ref={containerRef}
         className="image-container"
         onWheel={handleWheel}
-        style={getBackgroundStyle()}
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+        onMouseLeave={handleMouseUp}
+        style={getContainerStyle()}
       >
         <img
           ref={imageRef}
@@ -520,7 +675,9 @@ const AssetPreview: React.FC<AssetPreviewProps> = ({
                     : 'auto',
                   height: imageDimensions
                     ? `${imageDimensions.height * (zoomLevel / 100)}px`
-                    : 'auto'
+                    : 'auto',
+                  transform:
+                    zoomLevel > 100 ? `translate(${panOffset.x}px, ${panOffset.y}px)` : 'none'
                 }
           }
           onLoad={handleImageLoad}

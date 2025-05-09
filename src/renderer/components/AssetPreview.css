@@ -63,6 +63,60 @@
   padding: 0 10px;
 }
 
+/* Sprite Sheet Configuration */
+.sprite-sheet-config {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-right: 10px;
+}
+
+.config-title {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.8);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.config-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sprite-sheet-config label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+}
+
+.sprite-sheet-config input[type='number'] {
+  width: 40px;
+  height: 22px;
+  padding: 0 4px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 3px;
+  color: white;
+  text-align: center;
+}
+
+.sprite-sheet-config .apply-button {
+  background-color: rgba(0, 123, 255, 0.7);
+  color: white;
+  border: none;
+  border-radius: 3px;
+  padding: 2px 8px;
+  font-size: 11px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.sprite-sheet-config .apply-button:hover {
+  background-color: rgba(0, 123, 255, 0.9);
+}
+
 .icon-button {
   background: none;
   border: 1px solid rgba(255, 255, 255, 0.3);
@@ -107,6 +161,22 @@
 .zoom-info {
   display: flex;
   gap: 8px;
+}
+
+.sprite-sheet-toggle {
+  background-color: rgba(0, 123, 255, 0.7);
+  color: white;
+  border: none;
+  border-radius: 3px;
+  padding: 2px 8px;
+  font-size: 11px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  margin-left: 8px;
+}
+
+.sprite-sheet-toggle:hover {
+  background-color: rgba(0, 123, 255, 0.9);
 }
 
 /* Background options */

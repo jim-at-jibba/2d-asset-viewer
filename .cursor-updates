@@ -11,3 +11,9 @@
 - Added customizable transparency background with multiple options (checkered, black, white, gray, transparent)
 - Implemented mouse wheel zoom functionality with zoom level display
 - Fixed asset protocol handling by registering it as a privileged scheme before app ready to bypass CSP restrictions
+- Implemented animation preview features for Epic 6:
+  - Added detection for frame sequence animations and sprite sheets
+  - Added animation playback controls (play/pause, next/prev frames)
+  - Implemented animation speed control with adjustable FPS
+  - Added frame counter display showing current frame and total frames
+  - Created IPC handler for detecting related animation frames in a sequence
