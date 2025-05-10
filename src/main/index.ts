@@ -208,17 +208,19 @@ app.whenReady().then(() => {
                   children: subDirItems
                 }
               } else {
-                // Only include image files
+                // Only include image and audio files
                 const ext = extname(entry.name).toLowerCase()
                 const isImageFile = ['.png', '.jpg', '.jpeg', '.gif', '.webp', '.svg'].includes(ext)
+                const isAudioFile = ['.mp3', '.wav', '.ogg', '.m4a', '.flac'].includes(ext)
 
-                if (isImageFile) {
-                  console.log(`Found image file: ${entry.name}`)
+                if (isImageFile || isAudioFile) {
+                  console.log(`Found asset file: ${entry.name}`)
                   return {
                     id: `file-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
                     name: entry.name,
                     type: 'file' as const,
-                    path: entryPath
+                    path: entryPath,
+                    isAudioFile: isAudioFile ? true : undefined
                   }
                 }
                 return null

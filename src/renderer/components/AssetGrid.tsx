@@ -1,36 +1,12 @@
 import React, { useState, useEffect } from 'react'
 import './AssetGrid.css'
-import { FileText, Loader2 } from 'lucide-react'
+import { FileText, Loader2, Music } from 'lucide-react'
 
 // Import the FileTreeItem type from global window namespace
+// @ts-ignore: The global window.api type is extended elsewhere
 declare global {
   interface Window {
-    api: {
-      navigateToFolder: (folderPath: string) => Promise<{
-        success: boolean
-        folderPath?: string
-        folderName?: string
-        message?: string
-        children?: FileTreeItem[]
-      }>
-      selectFolder: () => Promise<{
-        success: boolean
-        folderPath?: string
-        message?: string
-      }>
-      getAnimationFrames: (
-        folderPath: string,
-        baseName: string,
-        extension: string
-      ) => Promise<{
-        success: boolean
-        frames: Array<{ path: string; name: string }>
-        message?: string
-      }>
-      showAssetContextMenu: (assetPath: string) => Promise<void>
-      copyAssetPath: (assetPath: string) => Promise<void>
-      showAssetInFolder: (assetPath: string) => Promise<void>
-    }
+    api: any
   }
 }
 
@@ -54,6 +30,9 @@ interface AssetItem {
   path: string
   type: 'file' | 'folder'
 }
+
+// Helper to check if a file is audio
+const isAudioFile = (filename: string): boolean => /\.(mp3|wav|ogg|m4a|flac)$/i.test(filename)
 
 const AssetGrid: React.FC<AssetGridProps> = ({ folderPath, onAssetSelect }) => {
   const [assets, setAssets] = useState<AssetItem[]>([])
@@ -131,6 +110,7 @@ const AssetGrid: React.FC<AssetGridProps> = ({ folderPath, onAssetSelect }) => {
   // Handle asset right-click
   const handleAssetContextMenu = (e: React.MouseEvent, asset: AssetItem): void => {
     e.preventDefault()
+    // @ts-ignore: showAssetContextMenu is available in preload
     window.api.showAssetContextMenu(asset.path)
   }
 
@@ -272,6 +252,8 @@ const AssetGrid: React.FC<AssetGridProps> = ({ folderPath, onAssetSelect }) => {
                       ?.classList.remove('hidden')
                   }}
                 />
+              ) : isAudioFile(asset.name) ? (
+                <Music className="asset-icon" />
               ) : (
                 <FileText className="asset-icon" />
               )}

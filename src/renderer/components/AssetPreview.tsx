@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import './AssetPreview.css'
-import { Play, Pause, ChevronLeft, ChevronRight, FastForward, Rewind } from 'lucide-react'
+import { Play, Pause, ChevronLeft, ChevronRight, FastForward, Rewind, Music } from 'lucide-react'
 
 // Add global window type declaration to include the new function
 declare global {
@@ -73,6 +73,9 @@ interface SpriteSheetConfig {
   rows: number
   columns: number
 }
+
+// Helper to check if a file is audio
+const isAudioFile = (filename: string): boolean => /\.(mp3|wav|ogg|m4a|flac)$/i.test(filename)
 
 const AssetPreview: React.FC<AssetPreviewProps> = ({
   assetPath,
@@ -524,6 +527,22 @@ const AssetPreview: React.FC<AssetPreviewProps> = ({
       <div className="asset-preview empty-state">
         <p>No asset selected</p>
         <p className="text-sm text-muted-foreground">Select an image from the file tree</p>
+      </div>
+    )
+  }
+
+  // AUDIO PREVIEW: If the asset is an audio file, show an audio player
+  if (isAudioFile(assetPath)) {
+    return (
+      <div className="asset-preview audio-preview">
+        <div className="audio-meta">
+          <Music style={{ marginRight: 8 }} />
+          <span className="audio-filename">{assetPath.split('/').pop()}</span>
+        </div>
+        <audio controls style={{ width: '100%', marginTop: 16 }}>
+          <source src={`asset://${assetPath}`} />
+          Your browser does not support the audio element.
+        </audio>
       </div>
     )
   }
