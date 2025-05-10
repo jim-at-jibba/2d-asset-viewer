@@ -40,11 +40,11 @@ function App(): React.JSX.Element {
           </div>
 
           {/* Asset grid - takes 60% of the available space */}
-          <div className="flex-1 overflow-hidden border border-border rounded-md min-h-[100px]">
-            <div className="asset-grid-header p-2 border-b border-border flex items-center">
+          <div className="flex-1 overflow-hidden border border-border rounded-md min-h-[100px] w-full">
+            <div className="p-2 border-b border-border flex items-center">
               <h2 className="text-lg font-semibold">{activeFolderName || 'No folder selected'}</h2>
             </div>
-            <div className="h-[calc(100%-40px)] overflow-auto">
+            <div className="h-[calc(100%-40px)] overflow-auto flex">
               <AssetGrid folderPath={currentFolderPath} onAssetSelect={handleAssetSelect} />
             </div>
           </div>
