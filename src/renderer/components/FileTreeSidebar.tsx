@@ -90,10 +90,14 @@ const TreeItem: React.FC<TreeItemProps> = ({ node, level = 0, onAssetSelect, onF
               )}
             />
             <div onClick={handleFolderClick} className="flex items-center flex-1 overflow-hidden">
-              <CurrentFolderIcon className="h-4 w-4 mr-1.5 flex-shrink-0 text-blue-500" />
+              <CurrentFolderIcon className="h-4 w-4 mr-2 flex-shrink-0 text-blue-500" />
+
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <span className="truncate">{node.name}</span>
+                  <span className="truncate">
+                    {' '}
+                    {node.name.length > 20 ? node.name.slice(0, 20) + '...' : node.name}
+                  </span>
                 </TooltipTrigger>
                 <TooltipContent side="right">{node.name}</TooltipContent>
               </Tooltip>

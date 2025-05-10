@@ -28,19 +28,19 @@ function App(): React.JSX.Element {
 
   return (
     <SidebarProvider>
-      <div className="flex h-screen bg-background text-foreground">
+      <div className="flex h-screen w-full bg-background text-foreground">
         {/* File tree sidebar */}
         <FileTreeSidebar onAssetSelect={handleAssetSelect} onFolderSelect={handleFolderSelect} />
 
         {/* Main content area */}
-        <main className="flex-1 flex flex-col h-screen p-4 overflow-hidden">
+        <main className="flex-1 flex flex-col h-screen p-4">
           {/* Sidebar Trigger */}
           <div className="mb-2 flex-none">
             <SidebarTrigger className="ml-2" />
           </div>
 
           {/* Asset grid - takes 60% of the available space */}
-          <div className="flex-1 overflow-hidden border border-border rounded-md min-h-[100px] w-full">
+          <div className="flex-1 overflow-hidden border border-border rounded-md min-h-[100px]">
             <div className="p-2 border-b border-border flex items-center">
               <h2 className="text-lg font-semibold">{activeFolderName || 'No folder selected'}</h2>
             </div>
