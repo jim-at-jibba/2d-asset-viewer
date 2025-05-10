@@ -1,11 +1,25 @@
-import React, { useState, useRef } from 'react'
+import React, { useState } from 'react'
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger
 } from '../src/components/ui/collapsible'
 import { Alert, AlertDescription } from '../src/components/ui/alert'
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarHeader,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel
+} from '../src/components/ui/sidebar'
 import { ScrollArea } from '../src/components/ui/scroll-area'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger
+} from '../src/components/ui/tooltip'
 import { cn } from '../src/lib/utils'
 import {
   ChevronRight,
@@ -50,70 +64,81 @@ const TreeItem: React.FC<TreeItemProps> = ({ node, level = 0, onAssetSelect, onF
     }
   }
 
-  if (isFolder) {
-    if (hasChildren) {
-      return (
-        <Collapsible
-          open={isOpen}
-          onOpenChange={(open) => {
-            console.log('Collapsible state changed:', open)
-            setIsOpen(open)
-          }}
-          className="w-full"
-        >
-          <CollapsibleTrigger asChild>
-            <div
-              style={{ paddingLeft: `${indentPadding}px` }}
+  // Render folder item with children
+  if (isFolder && hasChildren) {
+    return (
+      <Collapsible
+        open={isOpen}
+        onOpenChange={(open) => {
+          console.log('Collapsible state changed:', open)
+          setIsOpen(open)
+        }}
+        className="w-full"
+      >
+        <CollapsibleTrigger asChild>
+          <div
+            style={{ paddingLeft: `${indentPadding}px` }}
+            className={cn(
+              'flex items-center h-8 w-full text-sm rounded-md cursor-pointer',
+              'hover:bg-muted/50 transition-colors'
+            )}
+          >
+            <ChevronRight
               className={cn(
-                'flex items-center h-8 w-full text-sm rounded-md cursor-pointer',
-                'hover:bg-muted/50 transition-colors'
+                'h-4 w-4 mr-1.5 text-muted-foreground transition-transform duration-200',
+                isOpen && 'rotate-90'
               )}
-            >
-              <ChevronRight
-                className={cn(
-                  'h-4 w-4 mr-1.5 text-muted-foreground transition-transform duration-200',
-                  isOpen && 'rotate-90'
-                )}
-              />
-              <div onClick={handleFolderClick} className="flex items-center flex-1">
-                <CurrentFolderIcon className="h-4 w-4 mr-1.5 text-blue-500" />
-                <span className="truncate">{node.name}</span>
-              </div>
+            />
+            <div onClick={handleFolderClick} className="flex items-center flex-1 overflow-hidden">
+              <CurrentFolderIcon className="h-4 w-4 mr-1.5 flex-shrink-0 text-blue-500" />
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span className="truncate">{node.name}</span>
+                </TooltipTrigger>
+                <TooltipContent side="right">{node.name}</TooltipContent>
+              </Tooltip>
             </div>
-          </CollapsibleTrigger>
-          <CollapsibleContent>
-            {node.children?.map((child) => (
-              <TreeItem
-                key={child.id}
-                node={child}
-                level={level + 1}
-                onAssetSelect={onAssetSelect}
-                onFolderSelect={onFolderSelect}
-              />
-            ))}
-          </CollapsibleContent>
-        </Collapsible>
-      )
-    } else {
-      // Empty folder
-      return (
-        <div
-          style={{ paddingLeft: `${indentPadding}px` }}
-          className={cn(
-            'flex items-center h-8 w-full text-sm rounded-md cursor-pointer',
-            'hover:bg-muted/50 transition-colors'
-          )}
-          onClick={handleFolderClick}
-        >
-          <span className="w-4 mr-1.5" /> {/* Spacer for alignment with chevron */}
-          <CurrentFolderIcon className="h-4 w-4 mr-1.5 text-blue-500" />
-          <span className="truncate">{node.name}</span>
-        </div>
-      )
-    }
+          </div>
+        </CollapsibleTrigger>
+        <CollapsibleContent>
+          {node.children?.map((child) => (
+            <TreeItem
+              key={child.id}
+              node={child}
+              level={level + 1}
+              onAssetSelect={onAssetSelect}
+              onFolderSelect={onFolderSelect}
+            />
+          ))}
+        </CollapsibleContent>
+      </Collapsible>
+    )
   }
 
-  // File node - update to handle click for asset selection
+  // Empty folder
+  if (isFolder) {
+    return (
+      <div
+        style={{ paddingLeft: `${indentPadding}px` }}
+        className={cn(
+          'flex items-center h-8 w-full text-sm rounded-md cursor-pointer',
+          'hover:bg-muted/50 transition-colors'
+        )}
+        onClick={handleFolderClick}
+      >
+        <span className="w-4 mr-1.5" /> {/* Spacer for alignment with chevron */}
+        <CurrentFolderIcon className="h-4 w-4 mr-1.5 flex-shrink-0 text-blue-500" />
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <span className="truncate">{node.name}</span>
+          </TooltipTrigger>
+          <TooltipContent side="right">{node.name}</TooltipContent>
+        </Tooltip>
+      </div>
+    )
+  }
+
+  // File node
   return (
     <div
       style={{ paddingLeft: `${indentPadding}px` }}
@@ -124,8 +149,13 @@ const TreeItem: React.FC<TreeItemProps> = ({ node, level = 0, onAssetSelect, onF
       onClick={() => onAssetSelect && node.path && onAssetSelect(node.path)}
     >
       <span className="w-4 mr-1.5" /> {/* Spacer for alignment with chevron */}
-      <FileIcon className="h-4 w-4 mr-1.5 text-foreground/70" />
-      <span className="truncate">{node.name}</span>
+      <FileIcon className="h-4 w-4 mr-1.5 flex-shrink-0 text-foreground/70" />
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <span className="truncate">{node.name}</span>
+        </TooltipTrigger>
+        <TooltipContent side="right">{node.name}</TooltipContent>
+      </Tooltip>
     </div>
   )
 }
@@ -151,7 +181,6 @@ const FileTreeSidebar: React.FC<FileTreeSidebarProps> = ({
 }): React.ReactElement => {
   const [fileTree, setFileTree] = useState<TreeNode[]>([])
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
-  const sidebarRef = useRef<HTMLDivElement>(null)
 
   // Handle folder selection from the FolderPicker component
   const handleFolderSelect = async (folderPath: string): Promise<void> => {
@@ -211,41 +240,45 @@ const FileTreeSidebar: React.FC<FileTreeSidebarProps> = ({
   }
 
   return (
-    <div
-      ref={sidebarRef}
-      className={cn('relative min-w-[400px] border-r border-border', 'flex flex-col')}
-    >
-      {/* Folder Picker Button */}
-      <div className="p-2">
-        <FolderPicker onFolderSelect={handleFolderSelect} onError={showErrorMessage} />
-      </div>
+    <TooltipProvider>
+      <Sidebar className="min-w-[400px] border-r border-border">
+        <SidebarHeader className="px-4 py-2">
+          <FolderPicker onFolderSelect={handleFolderSelect} onError={showErrorMessage} />
+        </SidebarHeader>
 
-      {/* File Tree */}
-      <ScrollArea className="flex-1 p-2">
-        <div className="space-y-0.5">
-          {fileTree.map((node) => (
-            <TreeItem
-              key={node.id}
-              node={node}
-              level={0}
-              onAssetSelect={onAssetSelect}
-              onFolderSelect={onFolderSelect}
-            />
-          ))}
-        </div>
-      </ScrollArea>
+        <SidebarContent>
+          <SidebarGroup>
+            <SidebarGroupLabel>Asset Folders</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <ScrollArea className="h-[calc(100vh-120px)]">
+                <div className="px-1 py-2">
+                  {fileTree.map((node) => (
+                    <TreeItem
+                      key={node.id}
+                      node={node}
+                      level={0}
+                      onAssetSelect={onAssetSelect}
+                      onFolderSelect={onFolderSelect}
+                    />
+                  ))}
+                </div>
+              </ScrollArea>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        </SidebarContent>
 
-      {/* Error message */}
-      {errorMessage && (
-        <Alert
-          variant="destructive"
-          className="absolute bottom-4 left-4 right-4 z-50 animate-in fade-in slide-in-from-bottom-5"
-        >
-          <AlertCircle className="h-4 w-4" />
-          <AlertDescription>{errorMessage}</AlertDescription>
-        </Alert>
-      )}
-    </div>
+        {/* Error message */}
+        {errorMessage && (
+          <Alert
+            variant="destructive"
+            className="fixed bottom-4 left-4 right-4 z-50 animate-in fade-in slide-in-from-bottom-5"
+          >
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>{errorMessage}</AlertDescription>
+          </Alert>
+        )}
+      </Sidebar>
+    </TooltipProvider>
   )
 }
 

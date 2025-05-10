@@ -19,3 +19,9 @@
   - Created IPC handler for detecting related animation frames in a sequence
 - Refactored FileTreeSidebar to use ShadCN UI components, removing the need for the CSS file.
 - Updated sidebar width to a minimum of 400px for better usability with longer filenames.
+- Refactored sidebar to use ShadCN Sheet component, making it collapsible with a toggle button.
+- Replaced custom Sheet-based sidebar with native ShadCN Sidebar component for improved collapsibility and navigation.
+- Fixed layout issues by properly implementing SidebarProvider at the App level to maintain content structure.
+- Improved main content layout with proper sizing and empty states for better user experience.
+- Added tooltips to file tree items showing full file paths on hover for better navigation.
+- Added tooltips to file tree items showing file names on hover and improved truncation.

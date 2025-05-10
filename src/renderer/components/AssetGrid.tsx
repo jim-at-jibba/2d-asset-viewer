@@ -18,6 +18,15 @@ declare global {
         folderPath?: string
         message?: string
       }>
+      getAnimationFrames: (
+        folderPath: string,
+        baseName: string,
+        extension: string
+      ) => Promise<{
+        success: boolean
+        frames: Array<{ path: string; name: string }>
+        message?: string
+      }>
     }
   }
 }
@@ -166,23 +175,37 @@ const AssetGrid: React.FC<AssetGridProps> = ({ folderPath, onAssetSelect }) => {
 
   if (loading) {
     return (
-      <div className="asset-grid-loading">
-        <Loader2 className="animate-spin mr-2" />
+      <div className="flex items-center justify-center h-full w-full">
+        <Loader2 className="animate-spin h-6 w-6 mr-2" />
         <span>Loading assets...</span>
       </div>
     )
   }
 
   if (error) {
-    return <div className="asset-grid-error">{error}</div>
+    return (
+      <div className="flex items-center justify-center h-full w-full text-destructive">{error}</div>
+    )
   }
 
   if (!folderPath) {
-    return <div className="asset-grid-empty">No folder selected</div>
+    return (
+      <div className="flex flex-col items-center justify-center h-full w-full text-muted-foreground">
+        <FileText className="h-12 w-12 mb-2 opacity-20" />
+        <p>No folder selected</p>
+        <p className="text-sm mt-2">Click the folder button above to select an asset folder</p>
+      </div>
+    )
   }
 
   if (assets.length === 0) {
-    return <div className="asset-grid-empty">No assets found in this folder</div>
+    return (
+      <div className="flex flex-col items-center justify-center h-full w-full text-muted-foreground">
+        <FileText className="h-12 w-12 mb-2 opacity-20" />
+        <p>No assets found in this folder</p>
+        <p className="text-sm mt-2">Try selecting a different folder</p>
+      </div>
+    )
   }
 
   return (
