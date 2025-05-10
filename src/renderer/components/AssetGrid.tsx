@@ -17,6 +17,7 @@ interface FileTreeItem {
   path?: string
   isAssetFolder?: boolean
   children?: FileTreeItem[]
+  isAudioFile?: boolean
 }
 
 interface AssetGridProps {
@@ -29,10 +30,12 @@ interface AssetItem {
   name: string
   path: string
   type: 'file' | 'folder'
+  isAudioFile?: boolean
 }
 
 // Helper to check if a file is audio
-const isAudioFile = (filename: string): boolean => /\.(mp3|wav|ogg|m4a|flac)$/i.test(filename)
+// const isAudioFile = (filename: string): boolean => /\.(mp3|wav|ogg|m4a|flac)$/i.test(filename)
+// Commenting out the local helper as we now get this from the main process
 
 const AssetGrid: React.FC<AssetGridProps> = ({ folderPath, onAssetSelect }) => {
   const [assets, setAssets] = useState<AssetItem[]>([])
@@ -89,7 +92,8 @@ const AssetGrid: React.FC<AssetGridProps> = ({ folderPath, onAssetSelect }) => {
             id: item.id,
             name: item.name,
             path: item.path,
-            type: 'file'
+            type: 'file',
+            isAudioFile: item.isAudioFile
           })
         } else if (item.children && item.children.length > 0) {
           processItems(item.children)
@@ -237,8 +241,10 @@ const AssetGrid: React.FC<AssetGridProps> = ({ folderPath, onAssetSelect }) => {
             tabIndex={0}
           >
             <div className="asset-thumbnail">
-              {/* Use actual image thumbnails when possible */}
-              {asset.path && asset.path.match(/\.(png|jpe?g|gif|webp|svg)$/i) ? (
+              {/* Render Music icon for audio files, otherwise image thumbnail */}
+              {asset.isAudioFile ? (
+                <Music className="asset-icon h-16 w-16 text-gray-500" />
+              ) : asset.path && asset.path.match(/\.(png|jpe?g|gif|webp|svg)$/i) ? (
                 <img
                   src={`asset://${asset.path}`}
                   alt={asset.name}
@@ -252,8 +258,6 @@ const AssetGrid: React.FC<AssetGridProps> = ({ folderPath, onAssetSelect }) => {
                       ?.classList.remove('hidden')
                   }}
                 />
-              ) : isAudioFile(asset.name) ? (
-                <Music className="asset-icon" />
               ) : (
                 <FileText className="asset-icon" />
               )}

@@ -27,3 +27,9 @@
 - Added tooltips to file tree items showing file names on hover and improved truncation.
 - Added context menu functionality to AssetGrid component with options to copy asset path and show in folder
 - Added "Copy File" option to context menu for copying actual files to clipboard
+- Updated `src/main/index.ts` to recognize audio file extensions (.mp3, .wav, .ogg, .m4a, .flac) and add an `isAudioFile` property to file objects.
+- Modified `src/renderer/components/AssetGrid.tsx` to display a music icon for audio files using the `isAudioFile` property.
+- Created a new `src/renderer/components/AudioPlayer.tsx` component with play, pause, volume, and seek controls.
+- Created `src/renderer/components/AudioPlayer.css` for basic styling of the audio player.
+- Updated `src/renderer/components/AssetPreview.tsx` to conditionally render the `AudioPlayer` for audio files or the existing image preview for image files.
+- Removed an unused `Music` icon import from `AssetPreview.tsx`.

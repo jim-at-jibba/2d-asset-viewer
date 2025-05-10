@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import './AssetPreview.css'
-import { Play, Pause, ChevronLeft, ChevronRight, FastForward, Rewind, Music } from 'lucide-react'
+import { Play, Pause, ChevronLeft, ChevronRight, FastForward, Rewind } from 'lucide-react'
+import AudioPlayer from './AudioPlayer'
 
 // Add global window type declaration to include the new function
 declare global {
@@ -125,6 +126,17 @@ const AssetPreview: React.FC<AssetPreviewProps> = ({
 
   useEffect(() => {
     if (assetPath) {
+      // Check if it's an audio file first. If so, we don't need to do image-specific loading.
+      if (isAudioFile(assetPath)) {
+        setIsLoading(false) // Not loading an image
+        setError(null)
+        setImageDimensions(null) // Reset image specific state
+        setIsAnimationSequence(false) // Reset animation state
+        // Potentially stop any existing audio if the player was part of this component directly
+        // but AudioPlayer is self-contained, so this might not be needed here.
+        return // Skip image-specific logic
+      }
+
       setIsLoading(true)
       setError(null)
       // Reset image dimensions and zoom level when a new asset is loaded
@@ -531,18 +543,11 @@ const AssetPreview: React.FC<AssetPreviewProps> = ({
     )
   }
 
-  // AUDIO PREVIEW: If the asset is an audio file, show an audio player
+  // Conditional rendering for Audio vs Image
   if (isAudioFile(assetPath)) {
     return (
-      <div className="asset-preview audio-preview">
-        <div className="audio-meta">
-          <Music style={{ marginRight: 8 }} />
-          <span className="audio-filename">{assetPath.split('/').pop()}</span>
-        </div>
-        <audio controls style={{ width: '100%', marginTop: 16 }}>
-          <source src={`asset://${assetPath}`} />
-          Your browser does not support the audio element.
-        </audio>
+      <div className="asset-preview-container audio-mode flex items-center justify-center h-full w-full bg-neutral-800 p-4">
+        <AudioPlayer src={assetPath} />
       </div>
     )
   }

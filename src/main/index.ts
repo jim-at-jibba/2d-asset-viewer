@@ -226,7 +226,7 @@ app.whenReady().then(() => {
                 return null
               }
             })
-            .filter(Boolean) // Remove null entries (non-image files)
+            .filter(Boolean) // Remove null entries (non-image/audio files)
 
           console.log(`Returning ${items.length} items from ${dirPath}`)
           return items as FileTreeItem[]

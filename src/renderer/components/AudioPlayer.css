@@ -1,0 +1,78 @@
+.audio-player-container {
+  /* Using Tailwind utility classes for most styling, but can add specific overrides here if needed */
+}
+
+.seek-slider::-webkit-slider-thumb,
+.volume-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  background: #6366f1; /* indigo-500 */
+  border-radius: 50%;
+  cursor: pointer;
+  margin-top: -6px; /* Adjust to center thumb on track */
+}
+
+.seek-slider::-moz-range-thumb,
+.volume-slider::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  background: #6366f1; /* indigo-500 */
+  border-radius: 50%;
+  cursor: pointer;
+  border: none; /* FF adds a border by default */
+}
+
+/* Basic focus styles for accessibility */
+.control-button:focus,
+.seek-slider:focus,
+.volume-slider:focus {
+  outline: 2px solid #818cf8; /* indigo-400 */
+  outline-offset: 2px;
+}
+
+/* Style for the track progress for browsers that don't support the JS gradient update well */
+/* Webkit (Chrome, Safari, newer Edge) */
+.seek-slider::-webkit-slider-runnable-track {
+  height: 4px;
+  background: #4b5563; /* neutral-600 */
+  border-radius: 9999px;
+}
+
+.volume-slider::-webkit-slider-runnable-track {
+  height: 2px;
+  background: #4b5563; /* neutral-600 */
+  border-radius: 9999px;
+}
+
+/* Mozilla Firefox */
+.seek-slider::-moz-range-track {
+  height: 4px;
+  background: #4b5563; /* neutral-600 */
+  border-radius: 9999px;
+  border: none;
+}
+
+.volume-slider::-moz-range-track {
+  height: 2px;
+  background: #4b5563; /* neutral-600 */
+  border-radius: 9999px;
+  border: none;
+}
+
+/* The JS dynamically sets a linear-gradient background for the track, 
+   but these are fallbacks or base styles. 
+   The ::-moz-range-progress pseudo-element can be used for Firefox if preferred over JS gradient.
+*/
+.seek-slider::-moz-range-progress {
+  background-color: #4f46e5; /* indigo-600 */
+  height: 4px;
+  border-radius: 9999px;
+}
+
+.volume-slider::-moz-range-progress {
+  background-color: #4f46e5; /* indigo-600 */
+  height: 2px;
+  border-radius: 9999px;
+}
