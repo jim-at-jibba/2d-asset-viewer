@@ -128,6 +128,9 @@ const AssetPreview: React.FC<AssetPreviewProps> = ({
       setImageDimensions(null)
       setZoomLevel(100)
 
+      // Stop any existing animation
+      stopAnimation()
+
       // Detect animation sequences when a new asset is loaded
       detectAnimationSequence(assetPath)
     }
