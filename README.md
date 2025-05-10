@@ -2,11 +2,9 @@
 
 A lightweight desktop application for game developers to view, organize, and preview 2D sprite assets.
 
-![Asset Viewer Screenshot](resources/icon.png)
-
 ## Demo
 
-[Demo](./assets/demo.mp4)
+![Demo](./assets/demo.mp4)
 
 _A video demonstration of Asset Viewer in action. Replace this with your actual demo recording._
 
