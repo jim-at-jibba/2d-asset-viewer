@@ -106,7 +106,7 @@
 
 ## Epic 4: Basic Image Controls (F4)
 
-- [ ] **Mouse Wheel Zoom** (Priority: High 2)
+- [x] **Mouse Wheel Zoom** (Priority: High 2)
 
   - As a game artist, I want to zoom in/out of sprites via mouse wheel, so that I can examine details or get an overview quickly.
   - **Acceptance Criteria**:
@@ -114,14 +114,14 @@
     - Given a sprite is displayed in the preview area, when I scroll the mouse wheel down, then the sprite should zoom out.
   - **Dependencies**: Default Sizing
 
-- [ ] **Pan When Zoomed** (Priority: High 2)
+- [x] **Pan When Zoomed** (Priority: High 2)
 
   - As a game artist, I want to pan the view when zoomed in, so that I can navigate to different parts of larger sprites.
   - **Acceptance Criteria**:
     - Given a sprite is zoomed in beyond the preview area's boundaries, when I click and drag within the preview area, then the view should pan in the direction of the drag.
   - **Dependencies**: Mouse Wheel Zoom
 
-- [ ] **Zoom Control Buttons** (Priority: Medium 3)
+- [x] **Zoom Control Buttons** (Priority: Medium 3)
 
   - As a game artist, I want zoom in, zoom out, and reset buttons, so that I have precise control over the zoom level.
   - **Acceptance Criteria**:
@@ -130,14 +130,14 @@
     - Given a sprite is zoomed in or out, when I click the reset button, then the sprite should return to 100% zoom.
   - **Dependencies**: Mouse Wheel Zoom
 
-- [ ] **Image Quality Maintenance** (Priority: High 2)
+- [x] **Image Quality Maintenance** (Priority: High 2)
 
   - As a game artist, I want the application to maintain image quality during zoom operations, so that I can accurately assess pixel-level details.
   - **Acceptance Criteria**:
     - Given a sprite is displayed, when I zoom in, then the pixel boundaries should remain sharp without blurring or interpolation artifacts.
   - **Dependencies**: Mouse Wheel Zoom
 
-- [ ] **Fit to View** (Priority: Medium 3)
+- [x] **Fit to View** (Priority: Medium 3)
   - As a game developer, I want a shortcut to fit the image to the current view, so that I can quickly see the entire sprite.
   - **Acceptance Criteria**:
     - Given a sprite is displayed at any zoom level, when I press the "fit to view" button or shortcut, then the sprite should resize to fit entirely within the preview area while maintaining its aspect ratio.
@@ -182,7 +182,7 @@
 
 ## Epic 6: Animation Preview (F7)
 
-- [ ] **Animation Sequence Detection** (Priority: High 2)
+- [x] **Animation Sequence Detection** (Priority: High 2)
 
   - As a game artist, I want the application to detect frame-based animation sequences, so that I can preview animations easily.
   - **Acceptance Criteria**:
@@ -190,7 +190,7 @@
     - This needs to also work for sprites frames in a single image
   - **Dependencies**: Selection Highlighting
 
-- [ ] **Animation Playback Controls** (Priority: High 2)
+- [x] **Animation Playback Controls** (Priority: High 2)
 
   - As a game artist, I want play/pause controls for animations, so that I can view sprite animations in action.
   - **Acceptance Criteria**:
@@ -198,7 +198,7 @@
     - Given an animation is playing, when I click the pause button, then the animation should stop on the current frame.
   - **Dependencies**: Animation Sequence Detection
 
-- [ ] **Animation Speed Control** (Priority: Medium 3)
+- [x] **Animation Speed Control** (Priority: Medium 3)
 
   - As a game artist, I want to adjust animation playback speed, so that I can evaluate animations at different rates.
   - **Acceptance Criteria**:
@@ -206,7 +206,7 @@
     - Given the speed is adjusted, when I look at the speed indicator, then it should display the current frames per second.
   - **Dependencies**: Animation Playback Controls
 
-- [ ] **Frame Stepping** (Priority: Medium 3)
+- [x] **Frame Stepping** (Priority: Medium 3)
 
   - As a game artist, I want to step through animation frames one by one, so that I can examine individual frames in detail.
   - **Acceptance Criteria**:
@@ -214,7 +214,7 @@
     - Given an animation sequence is loaded, when I click the "previous frame" button, then the preview should move to the previous frame in the sequence.
   - **Dependencies**: Animation Sequence Detection
 
-- [ ] **Frame Counter Display** (Priority: Low 4)
+- [x] **Frame Counter Display** (Priority: Low 4)
   - As a game artist, I want to see the current frame number and total frames, so that I can track my position in the animation.
   - **Acceptance Criteria**:
     - Given an animation sequence is loaded, when I view or play the animation, then the UI should display "Frame X of Y" where X is the current frame and Y is the total number of frames.
