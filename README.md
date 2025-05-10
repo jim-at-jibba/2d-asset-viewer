@@ -6,7 +6,7 @@ A lightweight desktop application for game developers to view, organize, and pre
 
 ## Demo
 
-https://github.com/jim-at-jibba/asset-viewer/assets/demo.mp4
+[Demo](./assets/demo.mp4)
 
 _A video demonstration of Asset Viewer in action. Replace this with your actual demo recording._
 
