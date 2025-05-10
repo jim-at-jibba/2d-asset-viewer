@@ -33,3 +33,4 @@
 - Created `src/renderer/components/AudioPlayer.css` for basic styling of the audio player.
 - Updated `src/renderer/components/AssetPreview.tsx` to conditionally render the `AudioPlayer` for audio files or the existing image preview for image files.
 - Removed an unused `Music` icon import from `AssetPreview.tsx`.
+- Updated `README.md` to include descriptions of new audio management features, including supported file types, audio player in the preview, and updated asset grid display.

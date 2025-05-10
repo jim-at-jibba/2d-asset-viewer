@@ -1,6 +1,6 @@
 # 2D Asset Viewer
 
-A lightweight desktop application for game developers to view, organize, and preview 2D sprite assets.
+A lightweight desktop application for game developers to view, organize, and preview 2D sprite assets and audio files.
 
 ## Demo
 
@@ -10,14 +10,15 @@ _A video demonstration of Asset Viewer in action. Replace this with your actual 
 
 ## What It Does
 
-Asset Viewer is an Electron-based application that helps game developers manage their 2D sprite assets. Key features include:
+Asset Viewer is an Electron-based application that helps game developers manage their 2D sprite and audio assets. Key features include:
 
-- **File System Navigation:** Browse your computer's folders to locate sprite assets
-- **Asset Preview:** View sprite images with transparency support and background customization
+- **File System Navigation:** Browse your computer's folders to locate sprite and audio assets
+- **Asset Preview:** View sprite images with transparency support and background customization. Includes an audio player for sound files.
+- **Audio File Support:** Preview and play common audio formats (MP3, WAV, OGG, M4A, FLAC).
 - **Animation Detection:** Automatically detect frame-based animation sequences
 - **Sprite Sheet Support:** View sprite sheets with configurable rows and columns
 - **Animation Playback:** Play, pause, and control animation sequences
-- **Asset Grid:** View all assets in a folder with sorting options
+- **Asset Grid:** View all assets in a folder with thumbnails for images and icons for audio files, with sorting options
 - **Drag and Drop:** Quickly navigate to folders by drag-and-drop
 
 This tool is designed to simplify the workflow of game developers and artists working with 2D sprites by providing a dedicated viewer tailored to their needs.
@@ -96,10 +97,10 @@ The built application will be available in the `dist` directory.
 ## Usage
 
 1. Launch the application
-2. Click the folder icon in the sidebar to select a folder containing sprite assets
+2. Click the folder icon in the sidebar to select a folder containing sprite or audio assets
 3. Browse the folder structure in the sidebar
-4. Click on any image to preview it in the main pane
-5. Use the controls at the top of the preview pane to adjust background, zoom, or play animations
+4. Click on any image or audio file to preview it in the main pane
+5. Use the controls at the top of the preview pane to adjust background and zoom for images, or use the audio player controls for sound files. Play animations for image sequences.
 6. Sort assets using the controls above the asset grid
 
 ## Development Status
