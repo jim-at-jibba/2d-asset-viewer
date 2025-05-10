@@ -3,17 +3,17 @@
   "tailwind": {
     "config": "tailwind.config.js",
     "css": "src/renderer/src/assets/base.css",
-    "baseColor": "zinc",
+    "baseColor": "neutral",
     "cssVariables": true,
     "prefix": ""
   },
   "rsc": false,
   "aliases": {
-    "utils": "@/lib/utils",
-    "components": "@/components",
-    "lib": "@/lib",
-    "hooks": "@/lib/hooks",
-    "ui": "@/components/ui"
+    "utils": "@/renderer/src/lib/utils",
+    "components": "@/renderer/src/components",
+    "lib": "@/renderer/src/lib",
+    "hooks": "@/renderer/src/lib/hooks",
+    "ui": "@/renderer/src/components/ui"
   },
   "iconLibrary": "lucide"
 }
