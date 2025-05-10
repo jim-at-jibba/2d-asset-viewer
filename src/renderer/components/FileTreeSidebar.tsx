@@ -85,7 +85,7 @@ const TreeItem: React.FC<TreeItemProps> = ({ node, level = 0, onAssetSelect, onF
           >
             <ChevronRight
               className={cn(
-                'h-4 w-4 mr-1.5 text-muted-foreground transition-transform duration-200',
+                'h-4 w-4 mr-1.5 transition-transform duration-200',
                 isOpen && 'rotate-90'
               )}
             />
