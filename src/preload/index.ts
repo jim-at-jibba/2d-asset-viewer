@@ -6,7 +6,12 @@ const api = {
   navigateToFolder: (folderPath: string) => ipcRenderer.invoke('navigate-to-folder', folderPath),
   selectFolder: () => ipcRenderer.invoke('select-folder'),
   getAnimationFrames: (folderPath: string, baseName: string, extension: string) =>
-    ipcRenderer.invoke('get-animation-frames', folderPath, baseName, extension)
+    ipcRenderer.invoke('get-animation-frames', folderPath, baseName, extension),
+  showAssetContextMenu: (assetPath: string) =>
+    ipcRenderer.invoke('show-asset-context-menu', assetPath),
+  copyAssetPath: (assetPath: string) => ipcRenderer.invoke('copy-asset-path', assetPath),
+  copyAssetFile: (assetPath: string) => ipcRenderer.invoke('copy-asset-file', assetPath),
+  showAssetInFolder: (assetPath: string) => ipcRenderer.invoke('show-asset-in-folder', assetPath)
 }
 
 // Use `contextBridge` APIs to expose Electron APIs to

@@ -25,3 +25,5 @@
 - Improved main content layout with proper sizing and empty states for better user experience.
 - Added tooltips to file tree items showing full file paths on hover for better navigation.
 - Added tooltips to file tree items showing file names on hover and improved truncation.
+- Added context menu functionality to AssetGrid component with options to copy asset path and show in folder
+- Added "Copy File" option to context menu for copying actual files to clipboard

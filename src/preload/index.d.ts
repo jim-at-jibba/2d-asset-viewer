@@ -40,6 +40,10 @@ interface API {
     frames: Array<{ path: string; name: string }>
     message?: string
   }>
+  showAssetContextMenu: (assetPath: string) => Promise<void>
+  copyAssetPath: (assetPath: string) => Promise<void>
+  copyAssetFile: (assetPath: string) => Promise<void>
+  showAssetInFolder: (assetPath: string) => Promise<void>
 }
 
 declare global {

@@ -1,4 +1,4 @@
-import { app, shell, BrowserWindow, ipcMain, dialog, protocol } from 'electron'
+import { app, shell, BrowserWindow, ipcMain, dialog, protocol, Menu, clipboard } from 'electron'
 import { join, normalize, extname } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
@@ -326,6 +326,48 @@ app.whenReady().then(() => {
         frames: []
       }
     }
+  })
+
+  // Handle asset context menu
+  ipcMain.handle('show-asset-context-menu', async (_, assetPath) => {
+    const template = [
+      {
+        label: 'Copy Path',
+        click: () => {
+          clipboard.writeText(assetPath)
+        }
+      },
+      {
+        label: 'Copy File',
+        click: () => {
+          clipboard.writeBuffer('public.file-url', Buffer.from(assetPath))
+        }
+      },
+      {
+        label: 'Show in Folder',
+        click: () => {
+          shell.showItemInFolder(assetPath)
+        }
+      }
+    ]
+
+    const menu = Menu.buildFromTemplate(template)
+    menu.popup()
+  })
+
+  // Handle copy asset path
+  ipcMain.handle('copy-asset-path', async (_, assetPath) => {
+    clipboard.writeText(assetPath)
+  })
+
+  // Handle copy asset file
+  ipcMain.handle('copy-asset-file', async (_, assetPath) => {
+    clipboard.writeBuffer('public.file-url', Buffer.from(assetPath))
+  })
+
+  // Handle show asset in folder
+  ipcMain.handle('show-asset-in-folder', async (_, assetPath) => {
+    shell.showItemInFolder(assetPath)
   })
 
   createWindow()

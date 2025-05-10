@@ -27,6 +27,9 @@ declare global {
         frames: Array<{ path: string; name: string }>
         message?: string
       }>
+      showAssetContextMenu: (assetPath: string) => Promise<void>
+      copyAssetPath: (assetPath: string) => Promise<void>
+      showAssetInFolder: (assetPath: string) => Promise<void>
     }
   }
 }
@@ -123,6 +126,12 @@ const AssetGrid: React.FC<AssetGridProps> = ({ folderPath, onAssetSelect }) => {
   const handleAssetClick = (asset: AssetItem): void => {
     setSelectedAssetId(asset.id)
     onAssetSelect(asset.path)
+  }
+
+  // Handle asset right-click
+  const handleAssetContextMenu = (e: React.MouseEvent, asset: AssetItem): void => {
+    e.preventDefault()
+    window.api.showAssetContextMenu(asset.path)
   }
 
   // Sort assets based on the current sort option
@@ -243,6 +252,7 @@ const AssetGrid: React.FC<AssetGridProps> = ({ folderPath, onAssetSelect }) => {
             key={asset.id}
             className={`asset-item ${selectedAssetId === asset.id ? 'selected' : ''}`}
             onClick={() => handleAssetClick(asset)}
+            onContextMenu={(e) => handleAssetContextMenu(e, asset)}
             onKeyDown={(e) => handleKeyDown(e, index)}
             tabIndex={0}
           >
