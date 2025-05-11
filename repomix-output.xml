@@ -60,6 +60,8 @@ src/
       AssetGrid.tsx
       AssetPreview.css
       AssetPreview.tsx
+      AudioPlayer.css
+      AudioPlayer.tsx
       FilePicker.tsx
       FileTreeSidebar.tsx
     src/
@@ -334,6 +336,226 @@ metadata:
   version: 1.0
   tags: ["icons", "dependencies", "best-practice", "lucide"]
 </rule>
+</file>
+
+<file path="src/renderer/components/AudioPlayer.css">
+.audio-player-container {
+  /* Using Tailwind utility classes for most styling, but can add specific overrides here if needed */
+}
+
+.seek-slider::-webkit-slider-thumb,
+.volume-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  background: #6366f1; /* indigo-500 */
+  border-radius: 50%;
+  cursor: pointer;
+  margin-top: -6px; /* Adjust to center thumb on track */
+}
+
+.seek-slider::-moz-range-thumb,
+.volume-slider::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  background: #6366f1; /* indigo-500 */
+  border-radius: 50%;
+  cursor: pointer;
+  border: none; /* FF adds a border by default */
+}
+
+/* Basic focus styles for accessibility */
+.control-button:focus,
+.seek-slider:focus,
+.volume-slider:focus {
+  outline: 2px solid #818cf8; /* indigo-400 */
+  outline-offset: 2px;
+}
+
+/* Style for the track progress for browsers that don't support the JS gradient update well */
+/* Webkit (Chrome, Safari, newer Edge) */
+.seek-slider::-webkit-slider-runnable-track {
+  height: 4px;
+  background: #4b5563; /* neutral-600 */
+  border-radius: 9999px;
+}
+
+.volume-slider::-webkit-slider-runnable-track {
+  height: 2px;
+  background: #4b5563; /* neutral-600 */
+  border-radius: 9999px;
+}
+
+/* Mozilla Firefox */
+.seek-slider::-moz-range-track {
+  height: 4px;
+  background: #4b5563; /* neutral-600 */
+  border-radius: 9999px;
+  border: none;
+}
+
+.volume-slider::-moz-range-track {
+  height: 2px;
+  background: #4b5563; /* neutral-600 */
+  border-radius: 9999px;
+  border: none;
+}
+
+/* The JS dynamically sets a linear-gradient background for the track, 
+   but these are fallbacks or base styles. 
+   The ::-moz-range-progress pseudo-element can be used for Firefox if preferred over JS gradient.
+*/
+.seek-slider::-moz-range-progress {
+  background-color: #4f46e5; /* indigo-600 */
+  height: 4px;
+  border-radius: 9999px;
+}
+
+.volume-slider::-moz-range-progress {
+  background-color: #4f46e5; /* indigo-600 */
+  height: 2px;
+  border-radius: 9999px;
+}
+</file>
+
+<file path="src/renderer/components/AudioPlayer.tsx">
+import React, { useState, useRef, useEffect } from 'react'
+import { Play, Pause, Volume2, VolumeX } from 'lucide-react'
+import './AudioPlayer.css' // We'll create this CSS file next
+
+interface AudioPlayerProps {
+  src: string
+}
+
+const AudioPlayer: React.FC<AudioPlayerProps> = ({ src }) => {
+  const audioRef = useRef<HTMLAudioElement>(null)
+  const [isPlaying, setIsPlaying] = useState(false)
+  const [volume, setVolume] = useState(1)
+  const [duration, setDuration] = useState(0)
+  const [currentTime, setCurrentTime] = useState(0)
+
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.volume = volume
+    }
+  }, [volume])
+
+  useEffect(() => {
+    const audio = audioRef.current
+    if (audio) {
+      const setAudioData = (): void => {
+        setDuration(audio.duration)
+        setCurrentTime(audio.currentTime)
+      }
+
+      const setAudioTime = (): void => setCurrentTime(audio.currentTime)
+
+      audio.addEventListener('loadeddata', setAudioData)
+      audio.addEventListener('timeupdate', setAudioTime)
+      audio.addEventListener('ended', () => setIsPlaying(false))
+
+      return () => {
+        audio.removeEventListener('loadeddata', setAudioData)
+        audio.removeEventListener('timeupdate', setAudioTime)
+        audio.removeEventListener('ended', () => setIsPlaying(false))
+      }
+    }
+  }, [src]) // Re-run if src changes
+
+  const togglePlayPause = (): void => {
+    if (audioRef.current) {
+      if (isPlaying) {
+        audioRef.current.pause()
+      } else {
+        audioRef.current.play().catch((error) => console.error('Error playing audio:', error))
+      }
+      setIsPlaying(!isPlaying)
+    }
+  }
+
+  const handleVolumeChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
+    const newVolume = parseFloat(event.target.value)
+    setVolume(newVolume)
+    if (audioRef.current) {
+      audioRef.current.volume = newVolume
+    }
+  }
+
+  const handleSeek = (event: React.ChangeEvent<HTMLInputElement>): void => {
+    const newTime = parseFloat(event.target.value)
+    if (audioRef.current) {
+      audioRef.current.currentTime = newTime
+      setCurrentTime(newTime)
+    }
+  }
+
+  const formatTime = (time: number): string => {
+    const minutes = Math.floor(time / 60)
+    const seconds = Math.floor(time % 60)
+      .toString()
+      .padStart(2, '0')
+    return `${minutes}:${seconds}`
+  }
+
+  return (
+    <div className="audio-player-container bg-neutral-800 p-4 rounded-lg shadow-md flex flex-col items-center w-full max-w-md mx-auto">
+      <audio ref={audioRef} src={src} className="hidden" />
+
+      <div className="track-info mb-3 text-center">
+        {/* Placeholder for track name - can be passed as a prop later */}
+        <p className="text-sm text-neutral-400">{src.split('/').pop()}</p>
+      </div>
+
+      <div className="controls flex items-center justify-between w-full mb-3">
+        <button
+          onClick={togglePlayPause}
+          className="control-button text-neutral-300 hover:text-white transition-colors p-2"
+        >
+          {isPlaying ? <Pause size={28} /> : <Play size={28} />}
+        </button>
+
+        <div className="time-display text-xs text-neutral-400 mx-2">
+          {formatTime(currentTime)} / {formatTime(duration)}
+        </div>
+      </div>
+
+      <input
+        type="range"
+        min="0"
+        max={duration || 0}
+        value={currentTime}
+        onChange={handleSeek}
+        className="seek-slider w-full h-2 bg-neutral-600 rounded-lg appearance-none cursor-pointer mb-3"
+        style={{
+          background: `linear-gradient(to right, #4f46e5 ${(currentTime / duration) * 100}%, #4b5563 ${(currentTime / duration) * 100}%)`
+        }}
+      />
+
+      <div className="volume-control flex items-center w-full">
+        {volume > 0 ? (
+          <Volume2 size={20} className="text-neutral-400 mr-2" />
+        ) : (
+          <VolumeX size={20} className="text-neutral-400 mr-2" />
+        )}
+        <input
+          type="range"
+          min="0"
+          max="1"
+          step="0.01"
+          value={volume}
+          onChange={handleVolumeChange}
+          className="volume-slider w-full h-1 bg-neutral-600 rounded-lg appearance-none cursor-pointer"
+          style={{
+            background: `linear-gradient(to right, #4f46e5 ${volume * 100}%, #4b5563 ${volume * 100}%)`
+          }}
+        />
+      </div>
+    </div>
+  )
+}
+
+export default AudioPlayer
 </file>
 
 <file path="src/renderer/components/FilePicker.tsx">
@@ -3119,7 +3341,7 @@ if (process.contextIsolated) {
 <file path="README.md">
 # 2D Asset Viewer
 
-A lightweight desktop application for game developers to view, organize, and preview 2D sprite assets.
+A lightweight desktop application for game developers to view, organize, and preview 2D sprite assets and audio files.
 
 ## Demo
 
@@ -3129,14 +3351,15 @@ _A video demonstration of Asset Viewer in action. Replace this with your actual 
 
 ## What It Does
 
-Asset Viewer is an Electron-based application that helps game developers manage their 2D sprite assets. Key features include:
+Asset Viewer is an Electron-based application that helps game developers manage their 2D sprite and audio assets. Key features include:
 
-- **File System Navigation:** Browse your computer's folders to locate sprite assets
-- **Asset Preview:** View sprite images with transparency support and background customization
+- **File System Navigation:** Browse your computer's folders to locate sprite and audio assets
+- **Asset Preview:** View sprite images with transparency support and background customization. Includes an audio player for sound files.
+- **Audio File Support:** Preview and play common audio formats (MP3, WAV, OGG, M4A, FLAC).
 - **Animation Detection:** Automatically detect frame-based animation sequences
 - **Sprite Sheet Support:** View sprite sheets with configurable rows and columns
 - **Animation Playback:** Play, pause, and control animation sequences
-- **Asset Grid:** View all assets in a folder with sorting options
+- **Asset Grid:** View all assets in a folder with thumbnails for images and icons for audio files, with sorting options
 - **Drag and Drop:** Quickly navigate to folders by drag-and-drop
 
 This tool is designed to simplify the workflow of game developers and artists working with 2D sprites by providing a dedicated viewer tailored to their needs.
@@ -3215,10 +3438,10 @@ The built application will be available in the `dist` directory.
 ## Usage
 
 1. Launch the application
-2. Click the folder icon in the sidebar to select a folder containing sprite assets
+2. Click the folder icon in the sidebar to select a folder containing sprite or audio assets
 3. Browse the folder structure in the sidebar
-4. Click on any image to preview it in the main pane
-5. Use the controls at the top of the preview pane to adjust background, zoom, or play animations
+4. Click on any image or audio file to preview it in the main pane
+5. Use the controls at the top of the preview pane to adjust background and zoom for images, or use the audio player controls for sound files. Play animations for image sequences.
 6. Sort assets using the controls above the asset grid
 
 ## Development Status
@@ -3268,37 +3491,13 @@ While I'm not actively maintaining this project, feel free to fork it and make y
 <file path="src/renderer/components/AssetGrid.tsx">
 import React, { useState, useEffect } from 'react'
 import './AssetGrid.css'
-import { FileText, Loader2 } from 'lucide-react'
+import { FileText, Loader2, Music } from 'lucide-react'
 
 // Import the FileTreeItem type from global window namespace
+// @ts-ignore: The global window.api type is extended elsewhere
 declare global {
   interface Window {
-    api: {
-      navigateToFolder: (folderPath: string) => Promise<{
-        success: boolean
-        folderPath?: string
-        folderName?: string
-        message?: string
-        children?: FileTreeItem[]
-      }>
-      selectFolder: () => Promise<{
-        success: boolean
-        folderPath?: string
-        message?: string
-      }>
-      getAnimationFrames: (
-        folderPath: string,
-        baseName: string,
-        extension: string
-      ) => Promise<{
-        success: boolean
-        frames: Array<{ path: string; name: string }>
-        message?: string
-      }>
-      showAssetContextMenu: (assetPath: string) => Promise<void>
-      copyAssetPath: (assetPath: string) => Promise<void>
-      showAssetInFolder: (assetPath: string) => Promise<void>
-    }
+    api: any
   }
 }
 
@@ -3309,6 +3508,7 @@ interface FileTreeItem {
   path?: string
   isAssetFolder?: boolean
   children?: FileTreeItem[]
+  isAudioFile?: boolean
 }
 
 interface AssetGridProps {
@@ -3321,7 +3521,12 @@ interface AssetItem {
   name: string
   path: string
   type: 'file' | 'folder'
+  isAudioFile?: boolean
 }
+
+// Helper to check if a file is audio
+// const isAudioFile = (filename: string): boolean => /\.(mp3|wav|ogg|m4a|flac)$/i.test(filename)
+// Commenting out the local helper as we now get this from the main process
 
 const AssetGrid: React.FC<AssetGridProps> = ({ folderPath, onAssetSelect }) => {
   const [assets, setAssets] = useState<AssetItem[]>([])
@@ -3378,7 +3583,8 @@ const AssetGrid: React.FC<AssetGridProps> = ({ folderPath, onAssetSelect }) => {
             id: item.id,
             name: item.name,
             path: item.path,
-            type: 'file'
+            type: 'file',
+            isAudioFile: item.isAudioFile
           })
         } else if (item.children && item.children.length > 0) {
           processItems(item.children)
@@ -3399,6 +3605,7 @@ const AssetGrid: React.FC<AssetGridProps> = ({ folderPath, onAssetSelect }) => {
   // Handle asset right-click
   const handleAssetContextMenu = (e: React.MouseEvent, asset: AssetItem): void => {
     e.preventDefault()
+    // @ts-ignore: showAssetContextMenu is available in preload
     window.api.showAssetContextMenu(asset.path)
   }
 
@@ -3525,8 +3732,10 @@ const AssetGrid: React.FC<AssetGridProps> = ({ folderPath, onAssetSelect }) => {
             tabIndex={0}
           >
             <div className="asset-thumbnail">
-              {/* Use actual image thumbnails when possible */}
-              {asset.path && asset.path.match(/\.(png|jpe?g|gif|webp|svg)$/i) ? (
+              {/* Render Music icon for audio files, otherwise image thumbnail */}
+              {asset.isAudioFile ? (
+                <Music className="asset-icon h-16 w-16 text-gray-500" />
+              ) : asset.path && asset.path.match(/\.(png|jpe?g|gif|webp|svg)$/i) ? (
                 <img
                   src={`asset://${asset.path}`}
                   alt={asset.name}
@@ -3561,6 +3770,7 @@ export default AssetGrid
 import React, { useState, useEffect, useRef } from 'react'
 import './AssetPreview.css'
 import { Play, Pause, ChevronLeft, ChevronRight, FastForward, Rewind } from 'lucide-react'
+import AudioPlayer from './AudioPlayer'
 
 // Add global window type declaration to include the new function
 declare global {
@@ -3634,6 +3844,9 @@ interface SpriteSheetConfig {
   columns: number
 }
 
+// Helper to check if a file is audio
+const isAudioFile = (filename: string): boolean => /\.(mp3|wav|ogg|m4a|flac)$/i.test(filename)
+
 const AssetPreview: React.FC<AssetPreviewProps> = ({
   assetPath,
   folderPath,
@@ -3682,6 +3895,17 @@ const AssetPreview: React.FC<AssetPreviewProps> = ({
 
   useEffect(() => {
     if (assetPath) {
+      // Check if it's an audio file first. If so, we don't need to do image-specific loading.
+      if (isAudioFile(assetPath)) {
+        setIsLoading(false) // Not loading an image
+        setError(null)
+        setImageDimensions(null) // Reset image specific state
+        setIsAnimationSequence(false) // Reset animation state
+        // Potentially stop any existing audio if the player was part of this component directly
+        // but AudioPlayer is self-contained, so this might not be needed here.
+        return // Skip image-specific logic
+      }
+
       setIsLoading(true)
       setError(null)
       // Reset image dimensions and zoom level when a new asset is loaded
@@ -4088,6 +4312,15 @@ const AssetPreview: React.FC<AssetPreviewProps> = ({
     )
   }
 
+  // Conditional rendering for Audio vs Image
+  if (isAudioFile(assetPath)) {
+    return (
+      <div className="asset-preview-container audio-mode flex items-center justify-center h-full w-full bg-neutral-800 p-4">
+        <AudioPlayer src={assetPath} />
+      </div>
+    )
+  }
+
   return (
     <div className="asset-preview">
       {isLoading && (
@@ -4486,23 +4719,25 @@ app.whenReady().then(() => {
                   children: subDirItems
                 }
               } else {
-                // Only include image files
+                // Only include image and audio files
                 const ext = extname(entry.name).toLowerCase()
                 const isImageFile = ['.png', '.jpg', '.jpeg', '.gif', '.webp', '.svg'].includes(ext)
+                const isAudioFile = ['.mp3', '.wav', '.ogg', '.m4a', '.flac'].includes(ext)
 
-                if (isImageFile) {
-                  console.log(`Found image file: ${entry.name}`)
+                if (isImageFile || isAudioFile) {
+                  console.log(`Found asset file: ${entry.name}`)
                   return {
                     id: `file-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
                     name: entry.name,
                     type: 'file' as const,
-                    path: entryPath
+                    path: entryPath,
+                    isAudioFile: isAudioFile ? true : undefined
                   }
                 }
                 return null
               }
             })
-            .filter(Boolean) // Remove null entries (non-image files)
+            .filter(Boolean) // Remove null entries (non-image/audio files)
 
           console.log(`Returning ${items.length} items from ${dirPath}`)
           return items as FileTreeItem[]
@@ -4668,38 +4903,6 @@ app.on('window-all-closed', () => {
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
-</file>
-
-<file path=".cursor-updates">
-# Cursor Updates
-
-- Implemented folder navigation feature allowing users to navigate to selected folders in the file tree
-- Removed drag-and-drop functionality due to compatibility issues
-- Added a folder picker button that reliably handles folder selection across platforms
-- Fixed issue with tree population after folder selection
-- Implemented Asset Preview component with transparency rendering for PNG images (Epic 2)
-- Added protocol handler to load local images with transparency properly displayed
-- Implemented default sizing feature to show sprites at actual pixel dimensions
-- Added aspect ratio maintenance for proper image display
-- Added customizable transparency background with multiple options (checkered, black, white, gray, transparent)
-- Implemented mouse wheel zoom functionality with zoom level display
-- Fixed asset protocol handling by registering it as a privileged scheme before app ready to bypass CSP restrictions
-- Implemented animation preview features for Epic 6:
-  - Added detection for frame sequence animations and sprite sheets
-  - Added animation playback controls (play/pause, next/prev frames)
-  - Implemented animation speed control with adjustable FPS
-  - Added frame counter display showing current frame and total frames
-  - Created IPC handler for detecting related animation frames in a sequence
-- Refactored FileTreeSidebar to use ShadCN UI components, removing the need for the CSS file.
-- Updated sidebar width to a minimum of 400px for better usability with longer filenames.
-- Refactored sidebar to use ShadCN Sheet component, making it collapsible with a toggle button.
-- Replaced custom Sheet-based sidebar with native ShadCN Sidebar component for improved collapsibility and navigation.
-- Fixed layout issues by properly implementing SidebarProvider at the App level to maintain content structure.
-- Improved main content layout with proper sizing and empty states for better user experience.
-- Added tooltips to file tree items showing full file paths on hover for better navigation.
-- Added tooltips to file tree items showing file names on hover and improved truncation.
-- Added context menu functionality to AssetGrid component with options to copy asset path and show in folder
-- Added "Copy File" option to context menu for copying actual files to clipboard
 </file>
 
 <file path="tasks.md">
@@ -5135,6 +5338,45 @@ function App(): React.JSX.Element {
 }
 
 export default App
+</file>
+
+<file path=".cursor-updates">
+# Cursor Updates
+
+- Implemented folder navigation feature allowing users to navigate to selected folders in the file tree
+- Removed drag-and-drop functionality due to compatibility issues
+- Added a folder picker button that reliably handles folder selection across platforms
+- Fixed issue with tree population after folder selection
+- Implemented Asset Preview component with transparency rendering for PNG images (Epic 2)
+- Added protocol handler to load local images with transparency properly displayed
+- Implemented default sizing feature to show sprites at actual pixel dimensions
+- Added aspect ratio maintenance for proper image display
+- Added customizable transparency background with multiple options (checkered, black, white, gray, transparent)
+- Implemented mouse wheel zoom functionality with zoom level display
+- Fixed asset protocol handling by registering it as a privileged scheme before app ready to bypass CSP restrictions
+- Implemented animation preview features for Epic 6:
+  - Added detection for frame sequence animations and sprite sheets
+  - Added animation playback controls (play/pause, next/prev frames)
+  - Implemented animation speed control with adjustable FPS
+  - Added frame counter display showing current frame and total frames
+  - Created IPC handler for detecting related animation frames in a sequence
+- Refactored FileTreeSidebar to use ShadCN UI components, removing the need for the CSS file.
+- Updated sidebar width to a minimum of 400px for better usability with longer filenames.
+- Refactored sidebar to use ShadCN Sheet component, making it collapsible with a toggle button.
+- Replaced custom Sheet-based sidebar with native ShadCN Sidebar component for improved collapsibility and navigation.
+- Fixed layout issues by properly implementing SidebarProvider at the App level to maintain content structure.
+- Improved main content layout with proper sizing and empty states for better user experience.
+- Added tooltips to file tree items showing full file paths on hover for better navigation.
+- Added tooltips to file tree items showing file names on hover and improved truncation.
+- Added context menu functionality to AssetGrid component with options to copy asset path and show in folder
+- Added "Copy File" option to context menu for copying actual files to clipboard
+- Updated `src/main/index.ts` to recognize audio file extensions (.mp3, .wav, .ogg, .m4a, .flac) and add an `isAudioFile` property to file objects.
+- Modified `src/renderer/components/AssetGrid.tsx` to display a music icon for audio files using the `isAudioFile` property.
+- Created a new `src/renderer/components/AudioPlayer.tsx` component with play, pause, volume, and seek controls.
+- Created `src/renderer/components/AudioPlayer.css` for basic styling of the audio player.
+- Updated `src/renderer/components/AssetPreview.tsx` to conditionally render the `AudioPlayer` for audio files or the existing image preview for image files.
+- Removed an unused `Music` icon import from `AssetPreview.tsx`.
+- Updated `README.md` to include descriptions of new audio management features, including supported file types, audio player in the preview, and updated asset grid display.
 </file>
 
 <file path="src/renderer/components/FileTreeSidebar.tsx">

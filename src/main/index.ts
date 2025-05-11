@@ -332,29 +332,55 @@ app.whenReady().then(() => {
 
   // Handle asset context menu
   ipcMain.handle('show-asset-context-menu', async (_, assetPath) => {
-    const template = [
-      {
-        label: 'Copy Path',
-        click: () => {
-          clipboard.writeText(assetPath)
-        }
-      },
-      {
-        label: 'Copy File',
-        click: () => {
-          clipboard.writeBuffer('public.file-url', Buffer.from(assetPath))
-        }
-      },
-      {
-        label: 'Show in Folder',
-        click: () => {
-          shell.showItemInFolder(assetPath)
-        }
-      }
-    ]
+    try {
+      // Check if the path exists and determine if it's a file or directory
+      const stat = statSync(assetPath)
+      const isDirectory = stat.isDirectory()
 
-    const menu = Menu.buildFromTemplate(template)
-    menu.popup()
+      // Base template with options for both files and directories
+      const baseTemplate = [
+        {
+          label: 'Copy Path',
+          click: () => {
+            clipboard.writeText(assetPath)
+          }
+        },
+        {
+          label: 'Show in Folder',
+          click: () => {
+            shell.showItemInFolder(assetPath)
+          }
+        }
+      ]
+
+      // Add 'Copy File' option only for files
+      const template = isDirectory
+        ? baseTemplate
+        : [
+            ...baseTemplate,
+            {
+              label: 'Copy File',
+              click: () => {
+                clipboard.writeBuffer('public.file-url', Buffer.from(assetPath))
+              }
+            }
+          ]
+
+      const menu = Menu.buildFromTemplate(template)
+      menu.popup()
+    } catch (error) {
+      console.error('Error showing context menu:', error)
+      // If there's an error (like the path doesn't exist), show a basic menu
+      const menu = Menu.buildFromTemplate([
+        {
+          label: 'Copy Path',
+          click: () => {
+            clipboard.writeText(assetPath)
+          }
+        }
+      ])
+      menu.popup()
+    }
   })
 
   // Handle copy asset path

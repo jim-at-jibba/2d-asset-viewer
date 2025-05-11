@@ -34,3 +34,4 @@
 - Updated `src/renderer/components/AssetPreview.tsx` to conditionally render the `AudioPlayer` for audio files or the existing image preview for image files.
 - Removed an unused `Music` icon import from `AssetPreview.tsx`.
 - Updated `README.md` to include descriptions of new audio management features, including supported file types, audio player in the preview, and updated asset grid display.
+- Implemented right-click context menu functionality for sidebar file tree items, including options to copy path and show in folder for both files and directories.

@@ -64,6 +64,15 @@ const TreeItem: React.FC<TreeItemProps> = ({ node, level = 0, onAssetSelect, onF
     }
   }
 
+  // Handle context menu
+  const handleContextMenu = (e: React.MouseEvent): void => {
+    e.preventDefault()
+    if (node.path) {
+      // @ts-ignore: showAssetContextMenu is available in preload
+      window.api.showAssetContextMenu(node.path)
+    }
+  }
+
   // Render folder item with children
   if (isFolder && hasChildren) {
     return (
@@ -82,6 +91,7 @@ const TreeItem: React.FC<TreeItemProps> = ({ node, level = 0, onAssetSelect, onF
               'flex items-center h-8 w-full text-sm rounded-md cursor-pointer',
               'hover:bg-muted/50 transition-colors'
             )}
+            onContextMenu={handleContextMenu}
           >
             <ChevronRight
               className={cn(
@@ -129,6 +139,7 @@ const TreeItem: React.FC<TreeItemProps> = ({ node, level = 0, onAssetSelect, onF
           'hover:bg-muted/50 transition-colors'
         )}
         onClick={handleFolderClick}
+        onContextMenu={handleContextMenu}
       >
         <span className="w-4 mr-1.5" /> {/* Spacer for alignment with chevron */}
         <CurrentFolderIcon className="h-4 w-4 mr-1.5 flex-shrink-0 text-blue-500" />
@@ -151,6 +162,7 @@ const TreeItem: React.FC<TreeItemProps> = ({ node, level = 0, onAssetSelect, onF
         'hover:bg-muted/50 transition-colors'
       )}
       onClick={() => onAssetSelect && node.path && onAssetSelect(node.path)}
+      onContextMenu={handleContextMenu}
     >
       <span className="w-4 mr-1.5" /> {/* Spacer for alignment with chevron */}
       <FileIcon className="h-4 w-4 mr-1.5 flex-shrink-0 text-foreground/70" />
